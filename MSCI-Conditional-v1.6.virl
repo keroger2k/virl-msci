@@ -9,7 +9,7 @@
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="352,628" ipv4="192.168.0.6" ipv6="::b:1:0:0:1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 01:01:57 UTC Fri Apr 17 2015
+! Last configuration change at 14:34:03 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -90,28 +90,38 @@ interface GigabitEthernet0/2
 !
 router ospf 1001
  area 0 authentication message-digest
- redistribute bgp 27071 metric 1000 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27071 metric 100 subnets route-map CSNI-ROUTES
  network 10.200.200.26 0.0.0.0 area 0
  network 10.200.200.35 0.0.0.0 area 0
+ network 192.168.3.1 0.0.0.0 area 0
 !
 router bgp 27071
  bgp router-id 10.200.200.26
  bgp log-neighbor-changes
+ bgp default local-preference 500
  neighbor 10.200.200.33 remote-as 27071
  neighbor 10.200.200.33 description &lt;== iBGP Connection to CMAF-MSCI-0R-01 ==&gt;
  neighbor 10.200.200.33 update-source Loopback1
  neighbor 10.200.200.33 timers 10 30
+ neighbor 10.200.200.36 remote-as 27071
+ neighbor 10.200.200.36 description &lt;==iBGP Connection to CMAF-CORE-2 ==&gt;
+ neighbor 10.200.200.36 update-source Loopback1
  neighbor 192.168.1.1 remote-as 27058
  neighbor 192.168.1.1 description &lt;== eBGP Connection to PAFB Core 1 ==&gt;
  neighbor 192.168.1.1 update-source GigabitEthernet0/2
  !
  address-family ipv4
+  network 10.200.0.0 mask 255.255.0.0
   network 10.200.200.35 mask 255.255.255.255
   network 90.90.90.0 mask 255.255.255.0 backdoor
   neighbor 10.200.200.33 activate
-  neighbor 10.200.200.33 route-map CSNI-TERTIARY-PATH in
+  neighbor 10.200.200.33 next-hop-self
+  neighbor 10.200.200.33 soft-reconfiguration inbound
+  neighbor 10.200.200.36 activate
+  neighbor 10.200.200.36 next-hop-self
+  neighbor 10.200.200.36 soft-reconfiguration inbound
   neighbor 192.168.1.1 activate
-  neighbor 192.168.1.1 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 192.168.1.1 soft-reconfiguration inbound
  exit-address-family
 !
 ip forward-protocol nd
@@ -119,24 +129,58 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip route 10.200.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 10 permit 10.0.0.0/16
 !
-ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
-!
-route-map CSNI-ROUTES-ONLY permit 10
- match route-type external
-!
-route-map CSNI-TERTIARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071 27071 27071
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
 !
 !
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -179,7 +223,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="361,736" ipv4="192.168.0.7" ipv6="::b:1:0:0:2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 00:48:53 UTC Fri Apr 17 2015
+! Last configuration change at 14:57:09 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -260,28 +304,36 @@ interface GigabitEthernet0/2
 !
 router ospf 1001
  area 0 authentication message-digest
- redistribute bgp 27071 metric 1000 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27071 metric 200 subnets route-map CSNI-ROUTES
  network 10.200.200.30 0.0.0.0 area 0
  network 10.200.200.36 0.0.0.0 area 0
+ network 192.168.3.2 0.0.0.0 area 0
 !
 router bgp 27071
  bgp router-id 10.200.200.30
  bgp log-neighbor-changes
+ bgp default local-preference 400
  neighbor 10.200.200.33 remote-as 27071
  neighbor 10.200.200.33 description &lt;== iBGP Connection to CMAF-MSCI-OR-01 ==&gt;
  neighbor 10.200.200.33 update-source Loopback1
  neighbor 10.200.200.33 timers 10 30
+ neighbor 10.200.200.35 remote-as 27071
+ neighbor 10.200.200.35 description &lt;==iBGP Connection to CMAF-CORE-2 ==&gt;
+ neighbor 10.200.200.35 update-source Loopback1
  neighbor 192.168.2.1 remote-as 27058
  neighbor 192.168.2.1 description &lt;== eBGP Connection to PAFB Core 2 ==&gt;
  neighbor 192.168.2.1 update-source GigabitEthernet0/2
  !
  address-family ipv4
+  network 10.200.0.0 mask 255.255.0.0
   network 10.200.200.36 mask 255.255.255.255
   network 90.90.90.0 mask 255.255.255.0 backdoor
   neighbor 10.200.200.33 activate
-  neighbor 10.200.200.33 route-map CSNI-QUATERNARY-PATH in
+  neighbor 10.200.200.33 next-hop-self
+  neighbor 10.200.200.35 activate
+  neighbor 10.200.200.35 next-hop-self
   neighbor 192.168.2.1 activate
-  neighbor 192.168.2.1 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 192.168.2.1 soft-reconfiguration inbound
  exit-address-family
 !
 ip forward-protocol nd
@@ -289,24 +341,58 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip route 10.200.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 10 permit 10.0.0.0/16
 !
-ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
-!
-route-map CSNI-ROUTES-ONLY permit 10
- match route-type external
-!
-route-map CSNI-QUATERNARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071 27071 27071 27071
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
 !
 !
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -351,7 +437,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:50:01 UTC Thu Apr 16 2015
+! Last configuration change at 04:50:51 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -473,7 +559,45 @@ no ip http secure-server
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -517,7 +641,7 @@ end</entry>
     <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="236,449" ipv4="192.168.0.9" ipv6="::b:1:0:0:3">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 22:54:11 UTC Thu Apr 16 2015
+! Last configuration change at 04:21:29 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -630,7 +754,45 @@ no ip http secure-server
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -675,7 +837,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="238,271" ipv4="10.200.200.32" ipv6="::b:1:0:0:5">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 22:30:57 UTC Thu Apr 16 2015
+! Last configuration change at 11:01:37 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -752,7 +914,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- no ip address
+ ip address 10.11.12.7 255.255.255.0
  shutdown
  duplex auto
  speed auto
@@ -764,6 +926,8 @@ interface GigabitEthernet0/1
  ip address 10.200.200.1 255.255.255.252
  ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
  ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
+ ip nat outside
+ ip virtual-reassembly in
  duplex auto
  speed auto
  media-type rj45
@@ -774,6 +938,8 @@ interface GigabitEthernet0/2
  ip address 10.200.200.5 255.255.255.252
  ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
  ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
+ ip nat outside
+ ip virtual-reassembly in
  duplex auto
  speed auto
  media-type rj45
@@ -791,6 +957,8 @@ interface GigabitEthernet0/4
  description to CMAF-MSCI-FW-01 - CSNI
  ip vrf forwarding CSNI
  ip address 10.200.200.9 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -807,40 +975,54 @@ router ospf 1002 vrf CSNI
  router-id 10.200.200.33
  capability vrf-lite
  area 0 authentication message-digest
- redistribute bgp 27071 metric 500 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27071 metric 500 subnets route-map CSNI-ROUTES
  network 10.200.200.9 0.0.0.0 area 0
  network 10.200.200.33 0.0.0.0 area 0
 !
 router bgp 27071
  bgp router-id 10.200.200.33
  bgp log-neighbor-changes
+ bgp default local-preference 300
  !
  address-family ipv4 vrf CSNI
   network 50.50.50.0 mask 255.255.255.0
+  network 90.90.90.0 mask 255.255.255.0 backdoor
   neighbor 10.200.200.2 remote-as 200
   neighbor 10.200.200.2 description CSNI-1
   neighbor 10.200.200.2 update-source GigabitEthernet0/1
+  neighbor 10.200.200.2 timers 10 30
   neighbor 10.200.200.2 activate
-  neighbor 10.200.200.2 advertise-map ADVERTISE exist-map EXIST
+  neighbor 10.200.200.2 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
+  neighbor 10.200.200.2 weight 200
+  neighbor 10.200.200.2 soft-reconfiguration inbound
+  neighbor 10.200.200.2 route-map CSNI-ROUTES in
   neighbor 10.200.200.2 route-map CSNI-TERTIARY-PATH out
   neighbor 10.200.200.6 remote-as 200
   neighbor 10.200.200.6 description CSNI-2
   neighbor 10.200.200.6 update-source GigabitEthernet0/2
+  neighbor 10.200.200.6 timers 10 30
   neighbor 10.200.200.6 activate
-  neighbor 10.200.200.6 advertise-map ADVERTISE exist-map EXIST
+  neighbor 10.200.200.6 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
+  neighbor 10.200.200.6 weight 100
+  neighbor 10.200.200.6 soft-reconfiguration inbound
+  neighbor 10.200.200.6 route-map CSNI-ROUTES in
   neighbor 10.200.200.6 route-map CSNI-QUATERNARY-PATH out
   neighbor 10.200.200.35 remote-as 27071
   neighbor 10.200.200.35 description CMAF-CORE-2
   neighbor 10.200.200.35 update-source Loopback2
   neighbor 10.200.200.35 timers 10 30
   neighbor 10.200.200.35 activate
-  neighbor 10.200.200.35 prefix-list CSNI-SERVERS-NATPOOL out
+  neighbor 10.200.200.35 next-hop-self
+  neighbor 10.200.200.35 soft-reconfiguration inbound
+  neighbor 10.200.200.35 route-map CSNI-ROUTES out
   neighbor 10.200.200.36 remote-as 27071
   neighbor 10.200.200.36 description CMAF-CORE-1
   neighbor 10.200.200.36 update-source Loopback2
   neighbor 10.200.200.36 timers 10 30
   neighbor 10.200.200.36 activate
-  neighbor 10.200.200.36 prefix-list CSNI-SERVERS-NATPOOL out
+  neighbor 10.200.200.36 next-hop-self
+  neighbor 10.200.200.36 soft-reconfiguration inbound
+  neighbor 10.200.200.36 route-map CSNI-ROUTES out
  exit-address-family
 !
 ip forward-protocol nd
@@ -848,7 +1030,15 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip nat inside source static 192.168.0.9 50.50.50.9 vrf CSNI
+ip nat inside source static 10.200.200.10 50.50.50.10 vrf CSNI
+ip nat inside source static 10.200.200.14 50.50.50.14 vrf CSNI
+ip nat inside source static 10.200.200.22 50.50.50.22 vrf CSNI
+ip nat inside source static 10.0.100.26 50.50.50.26 vrf CSNI
 ip route vrf CSNI 50.50.50.0 255.255.255.0 Null0
+!
+ip access-list standard NATPOOL
+ permit 50.50.50.0 0.0.0.255 log
 !
 ip access-list extended CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC
  permit ip 90.90.90.0 0.0.0.255 50.50.50.0 0.0.0.255
@@ -858,35 +1048,90 @@ ip access-list extended US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC
  permit ip 50.50.50.0 0.0.0.255 90.90.90.0 0.0.0.255
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+!
+ip prefix-list PAFB-CORE1-LOOPBACK seq 5 permit 10.200.200.35/32
+!
+ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.200.200.36/32
 !
 ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
 !
-route-map CSNI-ROUTES-ONLY permit 10
- match route-type external
-!
 route-map CSNI-TERTIARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
+ continue 20
  set as-path prepend 27071 27071 27071
 !
+route-map CSNI-TERTIARY-PATH permit 20
+ match ip address NATPOOL
+!
+route-map CSNI-TERTIARY-PATH deny 30
+!
 route-map CSNI-QUATERNARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
+ continue 20
  set as-path prepend 27071 27071 27071 27071
 !
-route-map ADVERTISE permit 10
- match ip address 65
+route-map CSNI-QUATERNARY-PATH permit 20
+ match ip address NATPOOL
 !
-route-map EXIST permit 10
- match ip address 60
+route-map CSNI-QUATERNARY-PATH deny 30
+!
+route-map ADVERTISE-NATPOOL permit 10
+ match ip address prefix-list US-NATPOOL-ONLY
+!
+route-map CSNI-ROUTES-INTO-OSPF permit 10
+ match ip address prefix-list CSNI-ROUTES
+!
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
+!
+route-map CORE-REACHABLE permit 10
+ match ip address prefix-list PAFB-CORE1-LOOPBACK
+!
+route-map CORE-REACHABLE permit 20
+ match ip address prefix-list PAFB-CORE2-LOOPBACK
 !
 !
-access-list 60 permit 10.200.200.35
-access-list 60 permit 10.200.200.36
-access-list 65 permit 50.50.50.0 0.0.0.255
 !
 control-plane
 !
-banner login `CC
+alias exec sib show ip bgp vpnv4 vrf CSNI
+alias exec sir show ip route vrf CSNI 90.90.90.1
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -907,6 +1152,7 @@ services by attorneys, psychotherapists, or clergy, and their assistants.
 Such communications and work product are private and confidential. See User
 Agreement for details.
 `
+configuration mode exclusive
 !
 line con 0
  password cisco
@@ -931,7 +1177,7 @@ end</entry>
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="407,53" ipv4="192.168.0.11" ipv6="::b:1:0:0:6">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 23:31:59 UTC Thu Apr 16 2015
+! Last configuration change at 13:57:45 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -989,9 +1235,12 @@ interface Loopback0
  description Loopback
  ip address 192.168.0.11 255.255.255.255
 !
+interface Loopback100
+ ip address 90.90.90.1 255.255.255.0
+!
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.11.12.8 255.255.255.0
+ ip address 10.11.12.16 255.255.255.0
  duplex auto
  speed auto
  media-type rj45
@@ -1044,6 +1293,42 @@ ip route 90.90.90.0 255.255.255.0 Null0
 !
 control-plane
 !
+banner exec `
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
 banner login `
 **************************************************************************
 * IOSv - Cisco Systems Confidential                                      *
@@ -1085,7 +1370,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="608,55" ipv4="192.168.0.12" ipv6="::b:1:0:0:7">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 23:48:36 UTC Thu Apr 16 2015
+! Last configuration change at 07:10:01 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1143,6 +1428,12 @@ interface Loopback0
  description Loopback
  ip address 192.168.0.12 255.255.255.255
 !
+interface Loopback100
+ ip address 90.90.90.1 255.255.255.0
+!
+interface Loopback101
+ ip address 80.80.80.1 255.255.255.0
+!
 interface GigabitEthernet0/0
  description OOB Management
  ip address 10.11.12.9 255.255.255.0
@@ -1174,11 +1465,14 @@ router bgp 200
  bgp log-neighbor-changes
  neighbor 10.0.100.5 remote-as 27058
  neighbor 10.0.100.5 update-source GigabitEthernet0/2
+ neighbor 10.0.100.5 timers 10 30
  neighbor 10.200.200.5 remote-as 27071
  neighbor 10.200.200.5 update-source GigabitEthernet0/1
+ neighbor 10.200.200.5 timers 10 30
  neighbor 192.168.10.1 remote-as 200
  !
  address-family ipv4
+  network 80.80.80.0 mask 255.255.255.0
   network 90.90.90.0 mask 255.255.255.0
   neighbor 10.0.100.5 activate
   neighbor 10.200.200.5 activate
@@ -1198,7 +1492,43 @@ ip route 90.90.90.0 255.255.255.0 Null0
 !
 control-plane
 !
-banner login `
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `C
 **************************************************************************
 * IOSv - Cisco Systems Confidential                                      *
 *                                                                        *
@@ -1239,7 +1569,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="612,732">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 00:52:43 UTC Fri Apr 17 2015
+! Last configuration change at 14:53:11 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1293,6 +1623,10 @@ redundancy
 !
 !
 !
+interface Loopback0
+ description Loopback
+ ip address 192.168.0.12 255.255.255.255
+!
 interface Loopback1
  ip address 10.0.100.36 255.255.255.255
 !
@@ -1313,6 +1647,7 @@ interface GigabitEthernet0/1
  media-type rj45
 !
 interface GigabitEthernet0/2
+ description to PAFB-MSCI-OR-01
  ip address 192.168.2.1 255.255.255.252
  duplex auto
  speed auto
@@ -1320,28 +1655,40 @@ interface GigabitEthernet0/2
 !
 router ospf 1001
  area 0 authentication message-digest
- redistribute bgp 27058 metric 1000 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES
  network 10.0.100.30 0.0.0.0 area 0
  network 10.0.100.36 0.0.0.0 area 0
+ network 192.168.4.2 0.0.0.0 area 0
 !
 router bgp 27058
  bgp router-id 10.0.100.30
  bgp log-neighbor-changes
+ bgp default local-preference 300
  neighbor 10.0.100.33 remote-as 27058
  neighbor 10.0.100.33 description &lt;== iBGP Connection to PAFB-MSCI-OR-01 ==&gt;
  neighbor 10.0.100.33 update-source Loopback1
  neighbor 10.0.100.33 timers 10 30
+ neighbor 10.0.100.35 remote-as 27058
+ neighbor 10.0.100.35 description &lt;== iBGP Connection to PAFB-CORE-01 ==&gt;
+ neighbor 10.0.100.35 update-source Loopback1
+ neighbor 10.0.100.35 timers 10 30
  neighbor 192.168.2.2 remote-as 27071
  neighbor 192.168.2.2 description &lt;== eBGP Connection to CMAF Core 2 ==&gt;
  neighbor 192.168.2.2 update-source GigabitEthernet0/2
  !
  address-family ipv4
+  network 10.0.0.0 mask 255.255.0.0
   network 10.0.100.36 mask 255.255.255.255
+  network 10.100.0.0 mask 255.255.0.0
   network 90.90.90.0 mask 255.255.255.0 backdoor
   neighbor 10.0.100.33 activate
-  neighbor 10.0.100.33 route-map CSNI-SECONDARY-PATH in
+  neighbor 10.0.100.33 next-hop-self
+  neighbor 10.0.100.33 soft-reconfiguration inbound
+  neighbor 10.0.100.35 activate
+  neighbor 10.0.100.35 next-hop-self
+  neighbor 10.0.100.35 soft-reconfiguration inbound
   neighbor 192.168.2.2 activate
-  neighbor 192.168.2.2 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 192.168.2.2 soft-reconfiguration inbound
  exit-address-family
 !
 ip forward-protocol nd
@@ -1349,24 +1696,59 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip route 10.0.0.0 255.255.0.0 Null0
+ip route 10.100.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 10 permit 10.200.0.0/16
 !
-ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
-!
-route-map CSNI-ROUTES-ONLY permit 10
- match route-type external
-!
-route-map CSNI-SECONDARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071 27071
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
 !
 !
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -1409,7 +1791,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="602,622">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 01:57:40 UTC Fri Apr 17 2015
+! Last configuration change at 15:25:09 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1490,28 +1872,40 @@ interface GigabitEthernet0/2
 !
 router ospf 1001
  area 0 authentication message-digest
- redistribute bgp 27058 metric 1000 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES
  network 10.0.100.26 0.0.0.0 area 0
  network 10.0.100.35 0.0.0.0 area 0
+ network 192.168.4.1 0.0.0.0 area 0
 !
 router bgp 27058
  bgp router-id 10.0.100.26
  bgp log-neighbor-changes
+ bgp default local-preference 400
  neighbor 10.0.100.33 remote-as 27058
  neighbor 10.0.100.33 description &lt;== iBGP Connection to PAFB-MSCI-OR-01 ==&gt;
  neighbor 10.0.100.33 update-source Loopback1
  neighbor 10.0.100.33 timers 10 30
+ neighbor 10.0.100.36 remote-as 27058
+ neighbor 10.0.100.36 description &lt;== iBGP Connection to PAFB-CORE-02 ==&gt;
+ neighbor 10.0.100.36 update-source Loopback1
+ neighbor 10.0.100.36 timers 10 30
  neighbor 192.168.1.2 remote-as 27071
  neighbor 192.168.1.2 description &lt;== eBGP Connection to CMAF CORE 1 ==&gt;
  neighbor 192.168.1.2 update-source GigabitEthernet0/2
  !
  address-family ipv4
+  network 10.0.0.0 mask 255.255.0.0
   network 10.0.100.35 mask 255.255.255.255
+  network 10.100.0.0 mask 255.255.0.0
   network 90.90.90.0 mask 255.255.255.0 backdoor
   neighbor 10.0.100.33 activate
-  neighbor 10.0.100.33 route-map CSNI-PRIMARY-PATH in
+  neighbor 10.0.100.33 next-hop-self
+  neighbor 10.0.100.33 soft-reconfiguration inbound
+  neighbor 10.0.100.36 activate
+  neighbor 10.0.100.36 next-hop-self
+  neighbor 10.0.100.36 soft-reconfiguration inbound
   neighbor 192.168.1.2 activate
-  neighbor 192.168.1.2 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 192.168.1.2 soft-reconfiguration inbound
  exit-address-family
 !
 ip forward-protocol nd
@@ -1519,24 +1913,58 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip route 10.0.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 10 permit 10.200.0.0/16
 !
-ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
-!
-route-map CSNI-ROUTES-ONLY permit 10
- match route-type external
-!
-route-map CSNI-PRIMARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
 !
 !
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -1579,7 +2007,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="672,258">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 22:48:02 UTC Thu Apr 16 2015
+! Last configuration change at 07:15:14 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1666,8 +2094,8 @@ interface GigabitEthernet0/1
  description to CSNI-OR-01
  ip vrf forwarding CSNI
  ip address 10.0.100.1 255.255.255.252
- ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
- ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
+ ip nat outside
+ ip virtual-reassembly in
  duplex auto
  speed auto
  media-type rj45
@@ -1676,8 +2104,8 @@ interface GigabitEthernet0/2
  description to CSNI-OR-02
  ip vrf forwarding CSNI
  ip address 10.0.100.5 255.255.255.252
- ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
- ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
+ ip nat outside
+ ip virtual-reassembly in
  duplex auto
  speed auto
  media-type rj45
@@ -1695,6 +2123,8 @@ interface GigabitEthernet0/4
  description GigabitEthernet0/4
  ip vrf forwarding CSNI
  ip address 10.0.100.9 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly in
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -1711,40 +2141,53 @@ router ospf 1002 vrf CSNI
  router-id 10.0.100.33
  capability vrf-lite
  area 0 authentication message-digest
- redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES-ONLY
+ redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.0.100.9 0.0.0.0 area 0
  network 10.0.100.33 0.0.0.0 area 0
 !
 router bgp 27058
  bgp router-id 10.0.100.33
  bgp log-neighbor-changes
+ bgp default local-preference 500
  !
  address-family ipv4 vrf CSNI
   network 50.50.50.0 mask 255.255.255.0
   neighbor 10.0.100.2 remote-as 200
   neighbor 10.0.100.2 description CSNI-1
   neighbor 10.0.100.2 update-source GigabitEthernet0/1
+  neighbor 10.0.100.2 timers 10 30
   neighbor 10.0.100.2 activate
-  neighbor 10.0.100.2 advertise-map ADVERTISE exist-map EXIST
+  neighbor 10.0.100.2 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
+  neighbor 10.0.100.2 weight 200
+  neighbor 10.0.100.2 soft-reconfiguration inbound
+  neighbor 10.0.100.2 route-map CSNI-ROUTES in
   neighbor 10.0.100.2 route-map CSNI-PRIMARY-PATH out
   neighbor 10.0.100.6 remote-as 200
   neighbor 10.0.100.6 description CSNI-2
   neighbor 10.0.100.6 update-source GigabitEthernet0/2
+  neighbor 10.0.100.6 timers 10 30
   neighbor 10.0.100.6 activate
-  neighbor 10.0.100.6 advertise-map ADVERTISE exist-map EXIST
+  neighbor 10.0.100.6 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
+  neighbor 10.0.100.6 weight 100
+  neighbor 10.0.100.6 soft-reconfiguration inbound
+  neighbor 10.0.100.6 route-map CSNI-ROUTES in
   neighbor 10.0.100.6 route-map CSNI-SECONDARY-PATH out
   neighbor 10.0.100.35 remote-as 27058
   neighbor 10.0.100.35 description CMAF-CORE-2
   neighbor 10.0.100.35 update-source Loopback2
   neighbor 10.0.100.35 timers 10 30
   neighbor 10.0.100.35 activate
-  neighbor 10.0.100.35 prefix-list CSNI-SERVERS-NATPOOL out
+  neighbor 10.0.100.35 next-hop-self
+  neighbor 10.0.100.35 soft-reconfiguration inbound
+  neighbor 10.0.100.35 route-map CSNI-ROUTES out
   neighbor 10.0.100.36 remote-as 27058
   neighbor 10.0.100.36 description CMAF-CORE-1
   neighbor 10.0.100.36 update-source Loopback2
   neighbor 10.0.100.36 timers 10 30
   neighbor 10.0.100.36 activate
-  neighbor 10.0.100.36 prefix-list CSNI-SERVERS-NATPOOL out
+  neighbor 10.0.100.36 next-hop-self
+  neighbor 10.0.100.36 soft-reconfiguration inbound
+  neighbor 10.0.100.36 route-map CSNI-ROUTES out
  exit-address-family
 !
 ip forward-protocol nd
@@ -1752,7 +2195,15 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip nat inside source static 192.168.0.9 50.50.50.9 vrf CSNI
+ip nat inside source static 10.200.200.10 50.50.50.10 vrf CSNI
+ip nat inside source static 10.200.200.14 50.50.50.14 vrf CSNI
+ip nat inside source static 10.200.200.22 50.50.50.22 vrf CSNI
+ip nat inside source static 10.0.100.26 50.50.50.26 vrf CSNI
 ip route vrf CSNI 50.50.50.0 255.255.255.0 Null0
+!
+ip access-list standard NATPOOL
+ permit 50.50.50.0 0.0.0.255 log
 !
 ip access-list extended CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC
  permit ip 90.90.90.0 0.0.0.255 50.50.50.0 0.0.0.255
@@ -1762,35 +2213,95 @@ ip access-list extended US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC
  permit ip 50.50.50.0 0.0.0.255 90.90.90.0 0.0.0.255
 !
 !
-ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+!
+ip prefix-list PAFB-CORE1-LOOPBACK seq 5 permit 10.0.100.35/32
+!
+ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.0.100.36/32
 !
 ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
 !
-route-map CSNI-ROUTES-ONLY permit 10
+route-map ADVERTISE-NATPOOL permit 10
+ match ip address prefix-list US-NATPOOL-ONLY
+!
+route-map CSNI-ROUTES-INTO-OSPF permit 10
+ match ip address prefix-list CSNI-ROUTES
  match route-type external
 !
+route-map CSNI-ROUTES permit 10
+ match ip address prefix-list CSNI-ROUTES
+!
 route-map CSNI-SECONDARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071 27071
+ continue 20
+ set as-path prepend 27058 27058
 !
-route-map ADVERTISE permit 10
- match ip address 65
+route-map CSNI-SECONDARY-PATH permit 20
+ match ip address NATPOOL
 !
-route-map EXIST permit 10
- match ip address 60
+route-map CSNI-SECONDARY-PATH deny 30
 !
 route-map CSNI-PRIMARY-PATH permit 10
- match ip address prefix-list US-NATPOOL-ONLY
- set as-path prepend 27071
+ continue 20
+ set as-path prepend 27058
+!
+route-map CSNI-PRIMARY-PATH permit 20
+ match ip address NATPOOL
+!
+route-map CSNI-PRIMARY-PATH deny 30
+!
+route-map CORE-REACHABLE permit 10
+ match ip address prefix-list PAFB-CORE1-LOOPBACK
+!
+route-map CORE-REACHABLE permit 20
+ match ip address prefix-list PAFB-CORE2-LOOPBACK
 !
 !
-access-list 60 permit 10.0.100.36
-access-list 60 permit 10.0.100.35
-access-list 65 permit 50.50.50.0 0.0.0.255
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route vrf CSNI 90.90.90.1
+alias exec sib show ip bgp vpnv4 vrf CSNI
+alias exec csni1 show ip bgp vpnv4 vrf CSNI neigh 10.0.100.2 advertised-routes
+alias exec csni2 show ip bgp vpnv4 vrf CSNI neigh 10.0.100.6 advertised-routes
+alias exec cib clear ip bgp * soft out
+alias exec srb show run | b router b
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -1837,7 +2348,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:42:00 UTC Thu Apr 16 2015
+! Last configuration change at 04:51:23 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1959,7 +2470,45 @@ no ip http secure-server
 !
 control-plane
 !
-banner login `CC
+alias exec sir show ip route 90.90.90.1
+alias exec sib show ip bgp 
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
@@ -2003,7 +2552,7 @@ end</entry>
     <node name="PAFB-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="677,445">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 22:47:42 UTC Thu Apr 16 2015
+! Last configuration change at 04:51:16 UTC Mon Apr 20 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2116,7 +2665,43 @@ no ip http secure-server
 !
 control-plane
 !
-banner login `CC
+banner exec `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner incoming `C
+**************************************************************************
+* IOSv - Cisco Systems Confidential                                      *
+*                                                                        *
+* This software is provided as is without warranty for internal          *
+* development and testing purposes only under the terms of the Cisco     *
+* Early Field Trial agreement.  Under no circumstances may this software *
+* be used for production purposes or deployed in a production            *
+* environment.                                                           *
+*                                                                        *
+* By using the software, you agree to abide by the terms and conditions  *
+* of the Cisco Early Field Trial Agreement as well as the terms and      *
+* conditions of the Cisco End User License Agreement at                  *
+* http://www.cisco.com/go/eula                                           *
+*                                                                        *
+* Unauthorized use or distribution of this software is expressly         *
+* Prohibited.                                                            *
+**************************************************************************`
+banner login `CCC
 You are accessing a U.S. Government (USG) Information System (IS) that is
 provided for USG-authorized use only. By using this IS (which includes any
 device attached to this IS), you consent to the following conditions:
