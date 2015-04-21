@@ -6,10 +6,10 @@
         <entry key="AutoNetkit.IGP" type="String">isis</entry>
         <entry key="AutoNetkit.address_family" type="String">v4</entry>
     </extensions>
-    <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="352,628" ipv4="192.168.0.6" ipv6="::b:1:0:0:1">
+    <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="370,639" ipv4="192.168.0.6" ipv6="::b:1:0:0:1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:34:03 UTC Mon Apr 20 2015
+! Last configuration change at 01:28:58 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -84,6 +84,13 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 192.168.1.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ ip address 192.168.3.1 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
  media-type rj45
@@ -219,11 +226,12 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1" ipv4="10.200.200.26" netPrefixLenV4="30"/>
         <interface id="1" name="GigabitEthernet0/2" ipv4="192.168.1.1" netPrefixLenV4="30"/>
+        <interface id="2"/>
     </node>
-    <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="361,736" ipv4="192.168.0.7" ipv6="::b:1:0:0:2">
+    <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="336,998" ipv4="192.168.0.7" ipv6="::b:1:0:0:2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:57:09 UTC Mon Apr 20 2015
+! Last configuration change at 01:28:39 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -298,6 +306,13 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 192.168.2.2 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ ip address 192.168.3.2 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
  media-type rj45
@@ -431,13 +446,14 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1" ipv4="10.200.200.30" netPrefixLenV4="30"/>
         <interface id="1" name="GigabitEthernet0/2" ipv4="192.168.2.1" netPrefixLenV4="30"/>
+        <interface id="2"/>
     </node>
     <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="97,627" ipv4="10.200.200.34" ipv6="::b:1:0:0:4">
         <extensions>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 04:50:51 UTC Mon Apr 20 2015
+! Last configuration change at 01:24:12 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -641,7 +657,7 @@ end</entry>
     <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="236,449" ipv4="192.168.0.9" ipv6="::b:1:0:0:3">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 04:21:29 UTC Mon Apr 20 2015
+! Last configuration change at 01:21:49 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -837,7 +853,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="238,271" ipv4="10.200.200.32" ipv6="::b:1:0:0:5">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 11:01:37 UTC Mon Apr 20 2015
+! Last configuration change at 01:28:07 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -975,7 +991,7 @@ router ospf 1002 vrf CSNI
  router-id 10.200.200.33
  capability vrf-lite
  area 0 authentication message-digest
- redistribute bgp 27071 metric 500 subnets route-map CSNI-ROUTES
+ redistribute bgp 27071 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.200.200.9 0.0.0.0 area 0
  network 10.200.200.33 0.0.0.0 area 0
 !
@@ -993,20 +1009,18 @@ router bgp 27071
   neighbor 10.200.200.2 timers 10 30
   neighbor 10.200.200.2 activate
   neighbor 10.200.200.2 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
-  neighbor 10.200.200.2 weight 200
   neighbor 10.200.200.2 soft-reconfiguration inbound
-  neighbor 10.200.200.2 route-map CSNI-ROUTES in
-  neighbor 10.200.200.2 route-map CSNI-TERTIARY-PATH out
+  neighbor 10.200.200.2 route-map EGRESS-PRIMARY-PATH in
+  neighbor 10.200.200.2 route-map INGRESS-TERTIARY-PATH out
   neighbor 10.200.200.6 remote-as 200
   neighbor 10.200.200.6 description CSNI-2
   neighbor 10.200.200.6 update-source GigabitEthernet0/2
   neighbor 10.200.200.6 timers 10 30
   neighbor 10.200.200.6 activate
   neighbor 10.200.200.6 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
-  neighbor 10.200.200.6 weight 100
   neighbor 10.200.200.6 soft-reconfiguration inbound
-  neighbor 10.200.200.6 route-map CSNI-ROUTES in
-  neighbor 10.200.200.6 route-map CSNI-QUATERNARY-PATH out
+  neighbor 10.200.200.6 route-map EGRESS-QUATERNARY-PATH in
+  neighbor 10.200.200.6 route-map INGRESS-QUATERNARY-PATH out
   neighbor 10.200.200.35 remote-as 27071
   neighbor 10.200.200.35 description CMAF-CORE-2
   neighbor 10.200.200.35 update-source Loopback2
@@ -1056,29 +1070,48 @@ ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.200.200.36/32
 !
 ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
 !
-route-map CSNI-TERTIARY-PATH permit 10
+route-map INGRESS-SECONDARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058 27058
+!
+route-map INGRESS-SECONDARY-PATH permit 20
+ match ip address NATPOOL
+!
+route-map INGRESS-SECONDARY-PATH deny 30
+!
+route-map EGRESS-TERTIARY-PATH permit 10
  continue 20
  set as-path prepend 27071 27071 27071
 !
-route-map CSNI-TERTIARY-PATH permit 20
+route-map EGRESS-TERTIARY-PATH permit 20
+ match ip address CSNI-ROUTES
+!
+route-map EGRESS-TERTIARY-PATH deny 30
+!
+route-map INGRESS-PRIMARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058
+!
+route-map INGRESS-PRIMARY-PATH permit 20
  match ip address NATPOOL
 !
-route-map CSNI-TERTIARY-PATH deny 30
+route-map INGRESS-PRIMARY-PATH deny 30
 !
-route-map CSNI-QUATERNARY-PATH permit 10
+route-map EGRESS-QUATERNARY-PATH permit 10
  continue 20
  set as-path prepend 27071 27071 27071 27071
 !
-route-map CSNI-QUATERNARY-PATH permit 20
- match ip address NATPOOL
+route-map EGRESS-QUATERNARY-PATH permit 20
+ match ip address CSNI-ROUTES
 !
-route-map CSNI-QUATERNARY-PATH deny 30
+route-map EGRESS-QUATERNARY-PATH deny 30
 !
 route-map ADVERTISE-NATPOOL permit 10
  match ip address prefix-list US-NATPOOL-ONLY
 !
 route-map CSNI-ROUTES-INTO-OSPF permit 10
  match ip address prefix-list CSNI-ROUTES
+ match route-type external
 !
 route-map CSNI-ROUTES permit 10
  match ip address prefix-list CSNI-ROUTES
@@ -1177,7 +1210,7 @@ end</entry>
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="407,53" ipv4="192.168.0.11" ipv6="::b:1:0:0:6">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 13:57:45 UTC Mon Apr 20 2015
+! Last configuration change at 01:25:52 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1240,7 +1273,7 @@ interface Loopback100
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.11.12.16 255.255.255.0
+ ip address 10.11.12.8 255.255.255.0
  duplex auto
  speed auto
  media-type rj45
@@ -1370,7 +1403,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="608,55" ipv4="192.168.0.12" ipv6="::b:1:0:0:7">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 07:10:01 UTC Mon Apr 20 2015
+! Last configuration change at 01:27:01 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1566,10 +1599,10 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
     </node>
-    <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="612,732">
+    <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="660,986">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:53:11 UTC Mon Apr 20 2015
+! Last configuration change at 01:29:37 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1649,6 +1682,13 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to PAFB-MSCI-OR-01
  ip address 192.168.2.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ ip address 192.168.4.2 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
  media-type rj45
@@ -1787,11 +1827,12 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2" ipv4="192.168.2.2"/>
+        <interface id="2"/>
     </node>
-    <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="602,622">
+    <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="608,638">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 15:25:09 UTC Mon Apr 20 2015
+! Last configuration change at 01:30:08 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1866,6 +1907,13 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 192.168.1.1 255.255.255.252
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/3
+ ip address 192.168.4.1 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
  media-type rj45
@@ -2003,11 +2051,12 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2" ipv4="192.168.1.2" netPrefixLenV4="30"/>
+        <interface id="2"/>
     </node>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="672,258">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 07:15:14 UTC Mon Apr 20 2015
+! Last configuration change at 01:27:35 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2160,8 +2209,8 @@ router bgp 27058
   neighbor 10.0.100.2 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
   neighbor 10.0.100.2 weight 200
   neighbor 10.0.100.2 soft-reconfiguration inbound
-  neighbor 10.0.100.2 route-map CSNI-ROUTES in
-  neighbor 10.0.100.2 route-map CSNI-PRIMARY-PATH out
+  neighbor 10.0.100.2 route-map EGRESS-PRIMARY-PATH in
+  neighbor 10.0.100.2 route-map INGRESS-PRIMARY-PATH out
   neighbor 10.0.100.6 remote-as 200
   neighbor 10.0.100.6 description CSNI-2
   neighbor 10.0.100.6 update-source GigabitEthernet0/2
@@ -2170,8 +2219,8 @@ router bgp 27058
   neighbor 10.0.100.6 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
   neighbor 10.0.100.6 weight 100
   neighbor 10.0.100.6 soft-reconfiguration inbound
-  neighbor 10.0.100.6 route-map CSNI-ROUTES in
-  neighbor 10.0.100.6 route-map CSNI-SECONDARY-PATH out
+  neighbor 10.0.100.6 route-map EGRESS-SECONDARY-PATH in
+  neighbor 10.0.100.6 route-map INGRESS-SECONDARY-PATH out
   neighbor 10.0.100.35 remote-as 27058
   neighbor 10.0.100.35 description CMAF-CORE-2
   neighbor 10.0.100.35 update-source Loopback2
@@ -2221,6 +2270,24 @@ ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.0.100.36/32
 !
 ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
 !
+route-map INGRESS-SECONDARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058 27058
+!
+route-map INGRESS-SECONDARY-PATH permit 20
+ match ip address NATPOOL
+!
+route-map INGRESS-SECONDARY-PATH deny 30
+!
+route-map INGRESS-PRIMARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058
+!
+route-map INGRESS-PRIMARY-PATH permit 20
+ match ip address NATPOOL
+!
+route-map INGRESS-PRIMARY-PATH deny 30
+!
 route-map ADVERTISE-NATPOOL permit 10
  match ip address prefix-list US-NATPOOL-ONLY
 !
@@ -2239,6 +2306,24 @@ route-map CSNI-SECONDARY-PATH permit 20
  match ip address NATPOOL
 !
 route-map CSNI-SECONDARY-PATH deny 30
+!
+route-map EGRESS-SECONDARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058 27058
+!
+route-map EGRESS-SECONDARY-PATH permit 20
+ match ip address CSNI-ROUTES
+!
+route-map EGRESS-SECONDARY-PATH deny 30
+!
+route-map EGRESS-PRIMARY-PATH permit 10
+ continue 20
+ set as-path prepend 27058
+!
+route-map EGRESS-PRIMARY-PATH permit 20
+ match ip address CSNI-ROUTES
+!
+route-map EGRESS-PRIMARY-PATH deny 30
 !
 route-map CSNI-PRIMARY-PATH permit 10
  continue 20
@@ -2348,7 +2433,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 04:51:23 UTC Mon Apr 20 2015
+! Last configuration change at 01:26:35 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2552,7 +2637,7 @@ end</entry>
     <node name="PAFB-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="677,445">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 04:51:16 UTC Mon Apr 20 2015
+! Last configuration change at 01:26:23 UTC Tue Apr 21 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2762,4 +2847,6 @@ end</entry>
     <connection dst="/virl:topology/virl:node[7]/virl:interface[3]" src="/virl:topology/virl:node[6]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[9]/virl:interface[2]" style="Dotted" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[8]/virl:interface[2]" style="Dotted" src="/virl:topology/virl:node[2]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[3]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[3]" src="/virl:topology/virl:node[9]/virl:interface[3]"/>
 </topology>
