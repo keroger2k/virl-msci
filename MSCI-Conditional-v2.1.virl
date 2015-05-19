@@ -9,7 +9,7 @@
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="359,625" ipv4="192.168.0.6" ipv6="::b:1:0:0:1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:20:46 UTC Mon May 18 2015
+! Last configuration change at 22:51:21 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -100,6 +100,7 @@ router ospf 1
  redistribute bgp 300 metric 400 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.200.200.26 0.0.0.0 area 0
  network 10.200.200.35 0.0.0.0 area 0
+ network 192.168.3.1 0.0.0.0 area 0
 !
 router bgp 300
  bgp router-id 10.200.200.26
@@ -115,6 +116,10 @@ router bgp 300
  neighbor 10.200.200.36 password 7 021605481811003348
  neighbor 10.200.200.36 update-source Loopback1
  neighbor 10.200.200.36 timers 10 30
+ neighbor 192.168.1.1 remote-as 200
+ neighbor 192.168.1.1 description &lt;== eBGP Connection to PAFB-CORE-01 ==&gt; 
+ neighbor 192.168.1.1 update-source GigabitEthernet0/2
+ neighbor 192.168.1.1 timers 10 30
  !
  address-family ipv4
   network 10.200.200.35 mask 255.255.255.255
@@ -123,6 +128,8 @@ router bgp 300
   neighbor 10.200.200.33 soft-reconfiguration inbound
   neighbor 10.200.200.36 activate
   neighbor 10.200.200.36 next-hop-self
+  neighbor 192.168.1.1 activate
+  neighbor 192.168.1.1 soft-reconfiguration inbound
  exit-address-family
 !
 ip forward-protocol nd
@@ -133,10 +140,16 @@ no ip http secure-server
 ip route 10.200.0.0 255.255.0.0 Null0
 !
 !
+ip prefix-list CMAF-ROUTES seq 5 permit 10.200.0.0/16 le 32
+!
 ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
 route-map CSNI-ROUTES-INTO-OSPF permit 10
- match ip address prefix-list CSNI-SERVERS-NATPOOL PAFB-ROUTES
+ match ip address prefix-list CSNI-SERVERS-NATPOOL
+ match route-type external
+!
+route-map CSNI-ROUTES-INTO-OSPF permit 20
+ match ip address prefix-list CMAF-ROUTES
  match route-type external
 !
 !
@@ -225,7 +238,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="359,998" ipv4="192.168.0.7" ipv6="::b:1:0:0:2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:22:45 UTC Mon May 18 2015
+! Last configuration change at 23:02:40 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -316,6 +329,7 @@ router ospf 1
  redistribute bgp 300 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.200.200.30 0.0.0.0 area 0
  network 10.200.200.36 0.0.0.0 area 0
+ network 192.168.3.2 0.0.0.0 area 0
 !
 router bgp 300
  bgp router-id 10.200.200.30
@@ -327,13 +341,20 @@ router bgp 300
  neighbor 10.200.200.33 password 7 021605481811003348
  neighbor 10.200.200.33 update-source Loopback1
  neighbor 10.200.200.33 timers 10 30
+ neighbor 10.200.200.33 next-hop-self
  neighbor 10.200.200.33 soft-reconfiguration inbound
  neighbor 10.200.200.35 remote-as 300
  neighbor 10.200.200.35 description &lt;==iBGP Connection to CMAF-CORE-2 ==&gt;
  neighbor 10.200.200.35 password 7 021605481811003348
  neighbor 10.200.200.35 update-source Loopback1
  neighbor 10.200.200.35 timers 10 30
+ neighbor 10.200.200.35 next-hop-self
  neighbor 10.200.200.35 soft-reconfiguration inbound
+ neighbor 192.168.2.1 remote-as 200
+ neighbor 192.168.2.1 description &lt;== eBGP Connection to PAFB-CORE-02 ==&gt;
+ neighbor 192.168.2.1 update-source GigabitEthernet0/2
+ neighbor 192.168.2.1 timers 10 30
+ neighbor 192.168.2.1 soft-reconfiguration inbound
 !
 ip forward-protocol nd
 !
@@ -437,7 +458,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 19:08:38 UTC Mon May 18 2015
+! Last configuration change at 22:03:18 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -645,7 +666,7 @@ end</entry>
     <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="237,445" ipv4="192.168.0.9" ipv6="::b:1:0:0:3">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:07:32 UTC Mon May 18 2015
+! Last configuration change at 21:57:19 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -841,7 +862,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="237,256" ipv4="10.200.200.32" ipv6="::b:1:0:0:5">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:13:06 UTC Mon May 18 2015
+! Last configuration change at 22:24:00 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1190,7 +1211,7 @@ end</entry>
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="371,53" ipv4="192.168.0.11" ipv6="::b:1:0:0:6">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:13:49 UTC Mon May 18 2015
+! Last configuration change at 22:21:20 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1392,7 +1413,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="634,53" ipv4="192.168.0.12" ipv6="::b:1:0:0:7">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:14:39 UTC Mon May 18 2015
+! Last configuration change at 22:22:25 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1594,7 +1615,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="625,998">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:22:28 UTC Mon May 18 2015
+! Last configuration change at 22:56:02 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1649,7 +1670,7 @@ redundancy
 !
 !
 interface Loopback1
- ip address 10.0.100.36 255.255.255.255
+ ip address 10.0.150.36 255.255.255.255
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1661,7 +1682,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description PAFB-MSCI-IR-01
- ip address 10.0.100.30 255.255.255.252
+ ip address 10.0.150.30 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -1681,37 +1702,39 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
 !
-router ospf 1001
+router ospf 1
  area 0 authentication message-digest
- redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES
- network 10.0.100.30 0.0.0.0 area 0
- network 10.0.100.36 0.0.0.0 area 0
+ redistribute bgp 200 metric 400 subnets route-map CSNI-ROUTES-INTO-OSPF
+ network 10.0.150.30 0.0.0.0 area 0
+ network 10.0.150.36 0.0.0.0 area 0
  network 192.168.4.2 0.0.0.0 area 0
 !
-router bgp 27058
- bgp router-id 10.0.100.30
+router bgp 200
  bgp log-neighbor-changes
- neighbor 10.0.100.33 remote-as 27058
- neighbor 10.0.100.33 description &lt;== iBGP Connection to PAFB-MSCI-OR-01 ==&gt;
- neighbor 10.0.100.33 update-source Loopback1
- neighbor 10.0.100.33 timers 10 30
- neighbor 10.0.100.35 remote-as 27058
- neighbor 10.0.100.35 description &lt;== iBGP Connection to PAFB-CORE-01 ==&gt;
- neighbor 10.0.100.35 update-source Loopback1
- neighbor 10.0.100.35 timers 10 30
- neighbor 192.168.2.2 remote-as 27071
- neighbor 192.168.2.2 description &lt;== eBGP Connection to CMAF Core 2 ==&gt;
+ bgp default local-preference 400
+ neighbor 10.0.150.33 remote-as 200
+ neighbor 10.0.150.33 description &lt;== iBGP Connection to PAFB-MSCI-0R-01 ==&gt;
+ neighbor 10.0.150.33 password 7 021605481811003348
+ neighbor 10.0.150.33 update-source Loopback1
+ neighbor 10.0.150.33 timers 10 30
+ neighbor 10.0.150.35 remote-as 200
+ neighbor 10.0.150.35 description &lt;==iBGP Connection to CMAF-CORE-01 ==&gt;
+ neighbor 10.0.150.35 password 7 021605481811003348
+ neighbor 10.0.150.35 update-source Loopback1
+ neighbor 10.0.150.35 timers 10 30
+ neighbor 192.168.2.2 remote-as 300
+ neighbor 192.168.2.2 description &lt;== eBGP Connection to CMAF-CORE-02 ==&gt;
  neighbor 192.168.2.2 update-source GigabitEthernet0/2
+ neighbor 192.168.2.2 timers 10 30
  !
  address-family ipv4
-  network 10.0.0.0 mask 255.255.0.0
-  network 10.0.100.36 mask 255.255.255.255
-  neighbor 10.0.100.33 activate
-  neighbor 10.0.100.33 next-hop-self
-  neighbor 10.0.100.33 soft-reconfiguration inbound
-  neighbor 10.0.100.35 activate
-  neighbor 10.0.100.35 next-hop-self
-  neighbor 10.0.100.35 soft-reconfiguration inbound
+  network 10.0.150.36 mask 255.255.255.255
+  neighbor 10.0.150.33 activate
+  neighbor 10.0.150.33 next-hop-self
+  neighbor 10.0.150.33 soft-reconfiguration inbound
+  neighbor 10.0.150.35 activate
+  neighbor 10.0.150.35 next-hop-self
+  neighbor 10.0.150.35 soft-reconfiguration inbound
   neighbor 192.168.2.2 activate
   neighbor 192.168.2.2 soft-reconfiguration inbound
  exit-address-family
@@ -1724,18 +1747,20 @@ no ip http secure-server
 ip route 10.0.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
-ip prefix-list CSNI-ROUTES seq 10 permit 10.200.0.0/16
+ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
-route-map CSNI-ROUTES permit 10
- match ip address prefix-list CSNI-ROUTES
+route-map CSNI-ROUTES-INTO-OSPF permit 10
+ match ip address prefix-list CSNI-SERVERS-NATPOOL
+ match route-type external
+!
+route-map CSNI-ROUTES-INTO-OSPF permit 20
+ match ip address prefix-list PAFB-ROUTES
+ match route-type external
 !
 !
 !
 control-plane
 !
-alias exec sir show ip route 90.90.90.1
-alias exec sib show ip bgp 
 banner exec `C
 **************************************************************************
 * IOSv - Cisco Systems Confidential                                      *
@@ -1816,7 +1841,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="625,625">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:23:58 UTC Mon May 18 2015
+! Last configuration change at 23:03:11 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -1871,7 +1896,7 @@ redundancy
 !
 !
 interface Loopback1
- ip address 10.0.100.35 255.255.255.255
+ ip address 10.0.150.35 255.255.255.255
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1883,7 +1908,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to PAFB-MSCI-IR-01
- ip address 10.0.100.26 255.255.255.252
+ ip address 10.0.150.26 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -1902,62 +1927,58 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
 !
-router ospf 1001
+router ospf 1
  area 0 authentication message-digest
- redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES
- network 10.0.100.26 0.0.0.0 area 0
- network 10.0.100.35 0.0.0.0 area 0
+ redistribute bgp 200 metric 300 subnets route-map CSNI-ROUTES-INTO-OSPF
+ network 10.0.150.26 0.0.0.0 area 0
+ network 10.0.150.35 0.0.0.0 area 0
  network 192.168.4.1 0.0.0.0 area 0
 !
-router bgp 27058
- bgp router-id 10.0.100.26
+router bgp 200
  bgp log-neighbor-changes
- bgp default local-preference 200
- neighbor 10.0.100.33 remote-as 27058
- neighbor 10.0.100.33 description &lt;== iBGP Connection to PAFB-MSCI-OR-01 ==&gt;
- neighbor 10.0.100.33 update-source Loopback1
- neighbor 10.0.100.33 timers 10 30
- neighbor 10.0.100.36 remote-as 27058
- neighbor 10.0.100.36 description &lt;== iBGP Connection to PAFB-CORE-02 ==&gt;
- neighbor 10.0.100.36 update-source Loopback1
- neighbor 10.0.100.36 timers 10 30
- neighbor 192.168.1.2 remote-as 27071
- neighbor 192.168.1.2 description &lt;== eBGP Connection to CMAF CORE 1 ==&gt;
+ bgp default local-preference 500
+ network 10.0.150.35 mask 255.255.255.255
+ neighbor 10.0.150.33 remote-as 200
+ neighbor 10.0.150.33 description &lt;== iBGP Connection to PAFB-MSCI-0R-01 ==&gt;
+ neighbor 10.0.150.33 password 7 097C6E4D5D1247000F4D
+ neighbor 10.0.150.33 update-source Loopback1
+ neighbor 10.0.150.33 timers 10 30
+ neighbor 10.0.150.33 next-hop-self
+ neighbor 10.0.150.33 soft-reconfiguration inbound
+ neighbor 10.0.150.36 remote-as 200
+ neighbor 10.0.150.36 description &lt;==iBGP Connection to CMAF-CORE-02 ==&gt;
+ neighbor 10.0.150.36 password 7 021605481811003348
+ neighbor 10.0.150.36 update-source Loopback1
+ neighbor 10.0.150.36 timers 10 30
+ neighbor 10.0.150.36 next-hop-self
+ neighbor 10.0.150.36 soft-reconfiguration inbound
+ neighbor 192.168.1.2 remote-as 300
+ neighbor 192.168.1.2 description &lt;== eBGP Connection to CMAF-CORE-01 ==&gt;
  neighbor 192.168.1.2 update-source GigabitEthernet0/2
- !
- address-family ipv4
-  network 10.0.0.0 mask 255.255.0.0
-  network 10.0.100.35 mask 255.255.255.255
-  neighbor 10.0.100.33 activate
-  neighbor 10.0.100.33 next-hop-self
-  neighbor 10.0.100.33 soft-reconfiguration inbound
-  neighbor 10.0.100.36 activate
-  neighbor 10.0.100.36 next-hop-self
-  neighbor 10.0.100.36 soft-reconfiguration inbound
-  neighbor 192.168.1.2 activate
-  neighbor 192.168.1.2 soft-reconfiguration inbound
- exit-address-family
+ neighbor 192.168.1.2 timers 10 30
+ neighbor 192.168.1.2 soft-reconfiguration inbound
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
-ip route 10.0.0.0 255.255.0.0 Null0
 !
 !
-ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
-ip prefix-list CSNI-ROUTES seq 10 permit 10.200.0.0/16
+ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
-route-map CSNI-ROUTES permit 10
- match ip address prefix-list CSNI-ROUTES
+route-map CSNI-ROUTES-INTO-OSPF permit 10
+ match ip address prefix-list CSNI-SERVERS-NATPOOL
+ match route-type external
+!
+route-map CSNI-ROUTES-INTO-OSPF permit 20
+ match ip address prefix-list PAFB-ROUTES
+ match route-type external
 !
 !
 !
 control-plane
 !
-alias exec sir show ip route 90.90.90.1
-alias exec sib show ip bgp 
 banner exec `C
 **************************************************************************
 * IOSv - Cisco Systems Confidential                                      *
@@ -2038,7 +2059,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="751,256">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:15:56 UTC Mon May 18 2015
+! Last configuration change at 22:29:39 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2102,14 +2123,17 @@ redundancy
 !
 !
 interface Loopback1
+ description &lt;== Router ID for OSPF on SIPR Side ==&gt;
  ip vrf forwarding SIPR
- ip address 10.0.100.32 255.255.255.255
+ ip address 10.0.150.32 255.255.255.255
 !
 interface Loopback2
+ description &lt;== Router ID for OSPF &amp; BGP on CSNI Side ==&gt;
  ip vrf forwarding CSNI
- ip address 10.0.100.33 255.255.255.255
+ ip address 10.0.150.33 255.255.255.255
 !
 interface Loopback3
+ description &lt;== US SERVER NATPOOL NETWORK ==&gt;
  ip vrf forwarding CSNI
  ip address 50.50.50.1 255.255.255.0
 !
@@ -2122,9 +2146,11 @@ interface GigabitEthernet0/0
  media-type rj45
 !
 interface GigabitEthernet0/1
- description to CSNI-OR-01
+ description &lt;== Primary Connection to CSNI Switch ==&gt;
  ip vrf forwarding CSNI
- ip address 10.0.100.1 255.255.255.252
+ ip address 10.0.150.1 255.255.255.252
+ ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
+ ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
  ip nat outside
  ip virtual-reassembly in
  duplex auto
@@ -2132,9 +2158,11 @@ interface GigabitEthernet0/1
  media-type rj45
 !
 interface GigabitEthernet0/2
- description to CSNI-OR-02
+ description &lt;== Secondary Connection to CSNI Switch ==&gt;
  ip vrf forwarding CSNI
- ip address 10.0.100.5 255.255.255.252
+ ip address 10.0.150.5 255.255.255.252
+ ip access-group CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC in
+ ip access-group US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC out
  ip nat outside
  ip virtual-reassembly in
  duplex auto
@@ -2144,7 +2172,7 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  description to CMAF-MSCI-FW-01
  ip vrf forwarding SIPR
- ip address 10.0.100.13 255.255.255.252
+ ip address 10.0.150.13 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2153,7 +2181,7 @@ interface GigabitEthernet0/3
 interface GigabitEthernet0/4
  description GigabitEthernet0/4
  ip vrf forwarding CSNI
- ip address 10.0.100.9 255.255.255.252
+ ip address 10.0.150.9 255.255.255.252
  ip nat inside
  ip virtual-reassembly in
  ip ospf message-digest-key 1 md5 password
@@ -2161,62 +2189,68 @@ interface GigabitEthernet0/4
  speed auto
  media-type rj45
 !
-router ospf 1001 vrf SIPR
- router-id 10.0.100.32
- capability vrf-lite
- area 0 authentication message-digest
- network 10.0.100.13 0.0.0.0 area 0
- network 10.0.100.32 0.0.0.0 area 0
-!
 router ospf 1002 vrf CSNI
- router-id 10.0.100.33
+ router-id 10.0.150.33
  capability vrf-lite
  area 0 authentication message-digest
- redistribute bgp 27058 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
- network 10.0.100.9 0.0.0.0 area 0
- network 10.0.100.33 0.0.0.0 area 0
+ redistribute bgp 200 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
+ network 10.0.150.9 0.0.0.0 area 0
+ network 10.0.150.33 0.0.0.0 area 0
 !
-router bgp 27058
- bgp router-id 10.0.100.33
+router ospf 1001 vrf SIPR
+ router-id 10.0.150.32
+ capability vrf-lite
+ area 0 authentication message-digest
+ network 10.0.150.13 0.0.0.0 area 0
+ network 10.0.150.32 0.0.0.0 area 0
+!
+router bgp 200
+ bgp router-id 10.0.150.29
  bgp log-neighbor-changes
  bgp default local-preference 300
  !
  address-family ipv4 vrf CSNI
   network 50.50.50.0 mask 255.255.255.0
-  neighbor 10.0.100.2 remote-as 200
-  neighbor 10.0.100.2 description CSNI-1
-  neighbor 10.0.100.2 update-source GigabitEthernet0/1
-  neighbor 10.0.100.2 timers 10 30
-  neighbor 10.0.100.2 activate
-  neighbor 10.0.100.2 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
-  neighbor 10.0.100.2 soft-reconfiguration inbound
-  neighbor 10.0.100.2 route-map EGRESS-PRIMARY-PATH in
-  neighbor 10.0.100.2 route-map INGRESS-PRIMARY-PATH out
-  neighbor 10.0.100.6 remote-as 200
-  neighbor 10.0.100.6 description CSNI-2
-  neighbor 10.0.100.6 update-source GigabitEthernet0/2
-  neighbor 10.0.100.6 timers 10 30
-  neighbor 10.0.100.6 activate
-  neighbor 10.0.100.6 advertise-map ADVERTISE-NATPOOL exist-map CORE-REACHABLE
-  neighbor 10.0.100.6 soft-reconfiguration inbound
-  neighbor 10.0.100.6 route-map EGRESS-SECONDARY-PATH in
-  neighbor 10.0.100.6 route-map INGRESS-SECONDARY-PATH out
-  neighbor 10.0.100.35 remote-as 27058
-  neighbor 10.0.100.35 description CMAF-CORE-2
-  neighbor 10.0.100.35 update-source Loopback2
-  neighbor 10.0.100.35 timers 10 30
-  neighbor 10.0.100.35 activate
-  neighbor 10.0.100.35 next-hop-self
-  neighbor 10.0.100.35 soft-reconfiguration inbound
-  neighbor 10.0.100.35 route-map CSNI-ROUTES out
-  neighbor 10.0.100.36 remote-as 27058
-  neighbor 10.0.100.36 description CMAF-CORE-1
-  neighbor 10.0.100.36 update-source Loopback2
-  neighbor 10.0.100.36 timers 10 30
-  neighbor 10.0.100.36 activate
-  neighbor 10.0.100.36 next-hop-self
-  neighbor 10.0.100.36 soft-reconfiguration inbound
-  neighbor 10.0.100.36 route-map CSNI-ROUTES out
+  neighbor 10.0.150.2 remote-as 64000
+  neighbor 10.0.150.2 description &lt;== eBGP CSNI-01 ==&gt;
+  neighbor 10.0.150.2 password 7 021605481811003348
+  neighbor 10.0.150.2 update-source GigabitEthernet0/1
+  neighbor 10.0.150.2 timers 10 30
+  neighbor 10.0.150.2 activate
+  neighbor 10.0.150.2 advertise-map ADVERTISE-NATPOOL-TERTIARY exist-map CORE-REACHABLE
+  neighbor 10.0.150.2 soft-reconfiguration inbound
+  neighbor 10.0.150.2 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 10.0.150.2 prefix-list US-NATPOOL-ONLY out
+  neighbor 10.0.150.2 route-map EGRESS-TERTIARY-PATH in
+  neighbor 10.0.150.6 remote-as 64000
+  neighbor 10.0.150.6 description &lt;== eBGP CSNI-02 ==&gt;
+  neighbor 10.0.150.6 password 7 051B071C325B411B1D
+  neighbor 10.0.150.6 update-source GigabitEthernet0/2
+  neighbor 10.0.150.6 timers 10 30
+  neighbor 10.0.150.6 activate
+  neighbor 10.0.150.6 advertise-map ADVERTISE-NATPOOL-QUATERNARY exist-map CORE-REACHABLE
+  neighbor 10.0.150.6 soft-reconfiguration inbound
+  neighbor 10.0.150.6 prefix-list CSNI-SERVERS-NATPOOL in
+  neighbor 10.0.150.6 prefix-list US-NATPOOL-ONLY out
+  neighbor 10.0.150.6 route-map EGRESS-QUATERNARY-PATH in
+  neighbor 10.0.150.35 remote-as 200
+  neighbor 10.0.150.35 description &lt;== iBGP Connection to PAFB-CORE-01 ==&gt;
+  neighbor 10.0.150.35 password 7 097C6E4D5D1247000F4D
+  neighbor 10.0.150.35 update-source Loopback2
+  neighbor 10.0.150.35 timers 10 30
+  neighbor 10.0.150.35 activate
+  neighbor 10.0.150.35 next-hop-self
+  neighbor 10.0.150.35 soft-reconfiguration inbound
+  neighbor 10.0.150.35 prefix-list CSNI-SERVERS-NATPOOL out
+  neighbor 10.0.150.36 remote-as 200
+  neighbor 10.0.150.36 description &lt;== iBGP Connection to PAFB-CORE-02 ==&gt;
+  neighbor 10.0.150.36 password 7 105E080A16001D1908
+  neighbor 10.0.150.36 update-source Loopback2
+  neighbor 10.0.150.36 timers 10 30
+  neighbor 10.0.150.36 activate
+  neighbor 10.0.150.36 next-hop-self
+  neighbor 10.0.150.36 soft-reconfiguration inbound
+  neighbor 10.0.150.36 prefix-list CSNI-SERVERS-NATPOOL out
  exit-address-family
 !
 ip forward-protocol nd
@@ -2224,74 +2258,59 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip nat inside source static 192.168.0.9 50.50.50.9 vrf CSNI
-ip nat inside source static 10.200.200.10 50.50.50.10 vrf CSNI
-ip nat inside source static 10.200.200.14 50.50.50.14 vrf CSNI
-ip nat inside source static 10.200.200.22 50.50.50.22 vrf CSNI
-ip nat inside source static 10.0.100.26 50.50.50.26 vrf CSNI
 ip route vrf CSNI 50.50.50.0 255.255.255.0 Null0
 !
 ip access-list extended CN-MISSION-SRV-TO-US-MISSION-SRV-TRAFFIC
- permit ip 90.90.90.0 0.0.0.255 50.50.50.0 0.0.0.255
- permit tcp host 10.0.100.2 eq bgp host 10.0.100.1
- permit tcp host 10.0.100.6 eq bgp host 10.0.100.5
+ remark Allow CSNI NAT Pool to Communicate with US NAT POOL
+ permit ip 50.50.50.0 0.0.0.255 10.0.200.32 0.0.0.31
+ permit ip 10.0.200.32 0.0.0.31 50.50.50.0 0.0.0.255
+ remark Allow BGP between CSNI and MSCI Peer #1
+ remark STIG NET0410
+ permit tcp host 10.0.150.2 eq bgp host 10.0.150.1
+ remark Allow BGP between CSNI and MSCI Peer #2
+ remark STIG NET0410
+ permit tcp host 10.0.150.6 eq bgp host 10.0.150.5
+ remark STIG NET0892 Block SNMP on all external interfaces
+ remark STIG NET0923 Block loopback address 127.0.0.0/8
+ remark deny ip 127.0.0.0 0.255.255.255 any log
+ remark STIG NET0924 Block local-link 169.254.0.0/16
+ remark deny ip 169.254.0.0 0.0.255.255 any log
+ remark STIG NET0911 - Inbound ICMP messages are blocked 
+ remark STIG NET0918 - Deny ICMP Type 11
+ remark Permit ICMP ECHO/REPLY
+ permit icmp any any echo
+ permit icmp any any echo-reply
+ deny   icmp any any log
 ip access-list extended US-MISSION-SRV-TO-CN-MISSION-SRV-TRAFFIC
- permit ip 50.50.50.0 0.0.0.255 90.90.90.0 0.0.0.255
+ permit ip 50.50.50.0 0.0.0.255 10.0.200.32 0.0.0.31
 !
 !
-ip prefix-list CSNI-ROUTES seq 5 permit 90.90.90.0/24
+ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
-ip prefix-list PAFB-CORE1-LOOPBACK seq 5 permit 10.0.100.35/32
+ip prefix-list PAFB-CORE1-LOOPBACK seq 5 permit 10.0.150.35/32
 !
-ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.0.100.36/32
+ip prefix-list PAFB-CORE2-LOOPBACK seq 5 permit 10.0.150.36/32
 !
-ip prefix-list US-NATPOOL-ONLY seq 10 permit 50.50.50.0/24
+ip prefix-list US-NATPOOL-ONLY seq 5 permit 50.50.50.0/24
+logging trap notifications
 !
-route-map INGRESS-SECONDARY-PATH permit 10
- continue 20
- set as-path prepend 27058 27058
-!
-route-map INGRESS-SECONDARY-PATH permit 20
+route-map ADVERTISE-NATPOOL-QUATERNARY permit 10
  match ip address prefix-list US-NATPOOL-ONLY
+ set as-path prepend 200 200 200 200
 !
-route-map INGRESS-SECONDARY-PATH deny 30
+route-map EGRESS-TERTIARY-PATH permit 10
+ set as-path prepend 200 200 200
 !
-route-map INGRESS-PRIMARY-PATH permit 10
- continue 20
- set as-path prepend 27058
+route-map EGRESS-QUATERNARY-PATH permit 10
+ set as-path prepend 200 200 200 200
 !
-route-map INGRESS-PRIMARY-PATH permit 20
+route-map ADVERTISE-NATPOOL-TERTIARY permit 10
  match ip address prefix-list US-NATPOOL-ONLY
-!
-route-map INGRESS-PRIMARY-PATH deny 30
-!
-route-map ADVERTISE-NATPOOL permit 10
- match ip address prefix-list US-NATPOOL-ONLY
+ set as-path prepend 200 200 200
 !
 route-map CSNI-ROUTES-INTO-OSPF permit 10
- match ip address prefix-list CSNI-ROUTES
+ match ip address prefix-list CSNI-SERVERS-NATPOOL
  match route-type external
-!
-route-map CSNI-ROUTES permit 10
- match ip address prefix-list CSNI-ROUTES
-!
-route-map EGRESS-SECONDARY-PATH permit 10
- continue 20
- set as-path prepend 27058 27058
-!
-route-map EGRESS-SECONDARY-PATH permit 20
- match ip address prefix-list CSNI-ROUTES
-!
-route-map EGRESS-SECONDARY-PATH deny 30
-!
-route-map EGRESS-PRIMARY-PATH permit 10
- continue 20
- set as-path prepend 27058
-!
-route-map EGRESS-PRIMARY-PATH permit 20
- match ip address prefix-list CSNI-ROUTES
-!
-route-map EGRESS-PRIMARY-PATH deny 30
 !
 route-map CORE-REACHABLE permit 10
  match ip address prefix-list PAFB-CORE1-LOOPBACK
@@ -2303,12 +2322,7 @@ route-map CORE-REACHABLE permit 20
 !
 control-plane
 !
-alias exec sir show ip route vrf CSNI 90.90.90.1
-alias exec sib show ip bgp vpnv4 vrf CSNI
-alias exec csni1 show ip bgp vpnv4 vrf CSNI neigh 10.0.100.2 advertised-routes
 alias exec csni2 show ip bgp vpnv4 vrf CSNI neigh 10.0.100.6 advertised-routes
-alias exec cib clear ip bgp * soft out
-alias exec srb show run | b router b
 banner exec `C
 **************************************************************************
 * IOSv - Cisco Systems Confidential                                      *
@@ -2392,7 +2406,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="AutoNetkit.ibgp_role" type="String">Disabled</entry>
             <entry key="config" type="String">!
-! Last configuration change at 19:10:16 UTC Mon May 18 2015
+! Last configuration change at 22:05:12 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2448,7 +2462,7 @@ redundancy
 !
 interface Loopback0
  description Loopback
- ip address 10.0.100.34 255.255.255.255
+ ip address 10.0.150.34 255.255.255.255
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2460,7 +2474,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to CMAF-CORE-01
- ip address 10.0.100.25 255.255.255.252
+ ip address 10.0.150.25 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2468,7 +2482,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to CMAF-CORE-02
- ip address 10.0.100.29 255.255.255.252
+ ip address 10.0.150.29 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2476,7 +2490,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to CMAF-MSCI-FW-01
- ip address 10.0.100.21 255.255.255.252
+ ip address 10.0.150.21 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2498,10 +2512,10 @@ interface GigabitEthernet0/5
 !
 router ospf 1001
  area 0 authentication message-digest
- network 10.0.100.21 0.0.0.0 area 0
- network 10.0.100.25 0.0.0.0 area 0
- network 10.0.100.29 0.0.0.0 area 0
- network 10.0.100.34 0.0.0.0 area 0
+ network 10.0.150.21 0.0.0.0 area 0
+ network 10.0.150.25 0.0.0.0 area 0
+ network 10.0.150.29 0.0.0.0 area 0
+ network 10.0.150.34 0.0.0.0 area 0
 !
 ip forward-protocol nd
 !
@@ -2514,7 +2528,6 @@ no ip http secure-server
 !
 control-plane
 !
-alias exec sir show ip route 90.90.90.1
 alias exec sib show ip bgp 
 banner exec `C
 **************************************************************************
@@ -2596,7 +2609,7 @@ end</entry>
     <node name="PAFB-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="766,445">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:10:19 UTC Mon May 18 2015
+! Last configuration change at 22:04:05 UTC Mon May 18 2015
 !
 version 15.4
 service timestamps debug datetime msec
@@ -2663,7 +2676,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to CMAF-MSCI-IR-01
- ip address 10.0.100.22 255.255.255.252
+ ip address 10.0.150.22 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2671,7 +2684,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to CMAF-MSCI-OR-01
- ip address 10.0.100.14 255.255.255.252
+ ip address 10.0.150.14 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2686,7 +2699,7 @@ interface GigabitEthernet0/3
 !
 interface GigabitEthernet0/4
  description GigabitEthernet0/4
- ip address 10.0.100.10 255.255.255.252
+ ip address 10.0.150.10 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -2694,9 +2707,9 @@ interface GigabitEthernet0/4
 !
 router ospf 1001
  area 0 authentication message-digest
- network 10.0.100.10 0.0.0.0 area 0
- network 10.0.100.14 0.0.0.0 area 0
- network 10.0.100.22 0.0.0.0 area 0
+ network 10.0.150.10 0.0.0.0 area 0
+ network 10.0.150.14 0.0.0.0 area 0
+ network 10.0.150.22 0.0.0.0 area 0
 !
 ip forward-protocol nd
 !
