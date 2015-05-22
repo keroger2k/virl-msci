@@ -427,7 +427,7 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
     </node>
-    <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="396,272">
+    <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="405,272">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 18:53:50 UTC Tue May 19 2015
@@ -781,7 +781,7 @@ end</entry>
         <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="3" name="GigabitEthernet0/4"/>
     </node>
-    <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="984,272">
+    <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="1002,272">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 18:55:29 UTC Tue May 19 2015
@@ -1135,411 +1135,7 @@ end</entry>
         <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="3" name="GigabitEthernet0/4"/>
     </node>
-    <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="396,409">
-        <extensions>
-            <entry key="config" type="String">!
-! Last configuration change at 18:21:54 UTC Tue May 19 2015
-!
-version 15.5
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-!
-hostname CMAF-MSCI-FW-01
-!
-boot-start-marker
-boot-end-marker
-!
-!
-enable password cisco
-!
-no aaa new-model
-ethernet lmi ce
-!
-!
-!
-bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
-mmi polling-interval 60
-no mmi auto-configure
-no mmi pvc
-mmi snmp-timeout 180
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-no ip domain lookup
-ip cef
-ipv6 unicast-routing
-ipv6 cef
-!
-multilink bundle-name authenticated
-!
-!
-cts logging verbose
-!
-!
-!
-redundancy
-!
-!
-! 
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-interface Loopback0
- description Loopback
- ip address 192.168.0.9 255.255.255.255
-!
-interface GigabitEthernet0/0
- description OOB Management
- ip address 10.255.0.67 255.255.0.0
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/1
- description to CMAF-MSCI-IR-01
- ip address 10.200.200.22 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/2
- description to CMAF-MSCI-OR-01
- ip address 10.200.200.14 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/3
- description GigabitEthernet0/3
- no ip address
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/4
- description GigabitEthernet0/4
- ip address 10.200.200.10 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-router ospf 1001
- area 0 authentication message-digest
- network 10.200.200.10 0.0.0.0 area 0
- network 10.200.200.14 0.0.0.0 area 0
- network 10.200.200.22 0.0.0.0 area 0
-!
-ip forward-protocol nd
-!
-!
-no ip http server
-no ip http secure-server
-!
-!
-!
-!
-control-plane
-!
-alias exec sir show ip route 90.90.90.1
-alias exec sib show ip bgp 
-banner exec `C
-**************************************************************************
-* IOSv - Cisco Systems Confidential                                      *
-*                                                                        *
-* This software is provided as is without warranty for internal          *
-* development and testing purposes only under the terms of the Cisco     *
-* Early Field Trial agreement.  Under no circumstances may this software *
-* be used for production purposes or deployed in a production            *
-* environment.                                                           *
-*                                                                        *
-* By using the software, you agree to abide by the terms and conditions  *
-* of the Cisco Early Field Trial Agreement as well as the terms and      *
-* conditions of the Cisco End User License Agreement at                  *
-* http://www.cisco.com/go/eula                                           *
-*                                                                        *
-* Unauthorized use or distribution of this software is expressly         *
-* Prohibited.                                                            *
-**************************************************************************`
-banner incoming `C
-**************************************************************************
-* IOSv - Cisco Systems Confidential                                      *
-*                                                                        *
-* This software is provided as is without warranty for internal          *
-* development and testing purposes only under the terms of the Cisco     *
-* Early Field Trial agreement.  Under no circumstances may this software *
-* be used for production purposes or deployed in a production            *
-* environment.                                                           *
-*                                                                        *
-* By using the software, you agree to abide by the terms and conditions  *
-* of the Cisco Early Field Trial Agreement as well as the terms and      *
-* conditions of the Cisco End User License Agreement at                  *
-* http://www.cisco.com/go/eula                                           *
-*                                                                        *
-* Unauthorized use or distribution of this software is expressly         *
-* Prohibited.                                                            *
-**************************************************************************`
-banner login `CCC
-You are accessing a U.S. Government (USG) Information System (IS) that is
-provided for USG-authorized use only. By using this IS (which includes any
-device attached to this IS), you consent to the following conditions:
-- The USG routinely intercepts and monitors communications on this IS for
-purposes including, but not limited to, penetration testing, COMSEC
-monitoring, network operations and defense, personnel misconduct (PM), law
-enforcement (LE), and counterintelligence (CI) investigations.
-- At any time, the USG may inspect and seize data stored on this IS.
-- Communications using, or data stored on, this IS are not private, are subject
-to routine monitoring, interception, and search, and may be disclosed or used
-for any USG-authorized purpose.
-- This IS includes security measures (e.g., authentication and access controls)
-to protect USG interests--not for your personal benefit or privacy.
-- Notwithstanding the above, using this IS does not constitute consent to PM,
-LE or CI investigative searching or monitoring of the content of privileged
-communications, or work product, related to personal representation or
-services by attorneys, psychotherapists, or clergy, and their assistants.
-Such communications and work product are private and confidential. See User
-Agreement for details.
-`
-!
-line con 0
- password cisco
-line aux 0
-line vty 0 4
- exec-timeout 720 0
- password cisco
- login
- transport input telnet ssh
-!
-no scheduler allocate
-!
-end</entry>
-        </extensions>
-        <interface id="0" name="GigabitEthernet0/1"/>
-        <interface id="1" name="GigabitEthernet0/2"/>
-        <interface id="3" name="GigabitEthernet0/4"/>
-    </node>
-    <node name="PAFB-MSCI-FW-01" type="SIMPLE" subtype="IOSv" location="983,409">
-        <extensions>
-            <entry key="config" type="String">!
-! Last configuration change at 18:21:39 UTC Tue May 19 2015
-!
-version 15.5
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-!
-hostname PAFB-MSCI-FW-01
-!
-boot-start-marker
-boot-end-marker
-!
-!
-enable password cisco
-!
-no aaa new-model
-ethernet lmi ce
-!
-!
-!
-bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
-mmi polling-interval 60
-no mmi auto-configure
-no mmi pvc
-mmi snmp-timeout 180
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-no ip domain lookup
-ip cef
-ipv6 unicast-routing
-ipv6 cef
-!
-multilink bundle-name authenticated
-!
-!
-cts logging verbose
-!
-!
-!
-redundancy
-!
-!
-! 
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-interface Loopback0
- description Loopback
- ip address 192.168.0.9 255.255.255.255
-!
-interface GigabitEthernet0/0
- description OOB Management
- ip address 10.255.0.74 255.255.0.0
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/1
- description to CMAF-MSCI-IR-01
- ip address 10.0.150.22 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/2
- description to CMAF-MSCI-OR-01
- ip address 10.0.150.14 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/3
- description GigabitEthernet0/3
- no ip address
- duplex auto
- speed auto
- media-type rj45
-!
-interface GigabitEthernet0/4
- description GigabitEthernet0/4
- ip address 10.0.150.10 255.255.255.252
- ip ospf message-digest-key 1 md5 password
- duplex auto
- speed auto
- media-type rj45
-!
-router ospf 1001
- area 0 authentication message-digest
- network 10.0.150.10 0.0.0.0 area 0
- network 10.0.150.14 0.0.0.0 area 0
- network 10.0.150.22 0.0.0.0 area 0
-!
-ip forward-protocol nd
-!
-!
-no ip http server
-no ip http secure-server
-!
-!
-!
-!
-control-plane
-!
-banner exec `C
-**************************************************************************
-* IOSv - Cisco Systems Confidential                                      *
-*                                                                        *
-* This software is provided as is without warranty for internal          *
-* development and testing purposes only under the terms of the Cisco     *
-* Early Field Trial agreement.  Under no circumstances may this software *
-* be used for production purposes or deployed in a production            *
-* environment.                                                           *
-*                                                                        *
-* By using the software, you agree to abide by the terms and conditions  *
-* of the Cisco Early Field Trial Agreement as well as the terms and      *
-* conditions of the Cisco End User License Agreement at                  *
-* http://www.cisco.com/go/eula                                           *
-*                                                                        *
-* Unauthorized use or distribution of this software is expressly         *
-* Prohibited.                                                            *
-**************************************************************************`
-banner incoming `C
-**************************************************************************
-* IOSv - Cisco Systems Confidential                                      *
-*                                                                        *
-* This software is provided as is without warranty for internal          *
-* development and testing purposes only under the terms of the Cisco     *
-* Early Field Trial agreement.  Under no circumstances may this software *
-* be used for production purposes or deployed in a production            *
-* environment.                                                           *
-*                                                                        *
-* By using the software, you agree to abide by the terms and conditions  *
-* of the Cisco Early Field Trial Agreement as well as the terms and      *
-* conditions of the Cisco End User License Agreement at                  *
-* http://www.cisco.com/go/eula                                           *
-*                                                                        *
-* Unauthorized use or distribution of this software is expressly         *
-* Prohibited.                                                            *
-**************************************************************************`
-banner login `CCC
-You are accessing a U.S. Government (USG) Information System (IS) that is
-provided for USG-authorized use only. By using this IS (which includes any
-device attached to this IS), you consent to the following conditions:
-- The USG routinely intercepts and monitors communications on this IS for
-purposes including, but not limited to, penetration testing, COMSEC
-monitoring, network operations and defense, personnel misconduct (PM), law
-enforcement (LE), and counterintelligence (CI) investigations.
-- At any time, the USG may inspect and seize data stored on this IS.
-- Communications using, or data stored on, this IS are not private, are subject
-to routine monitoring, interception, and search, and may be disclosed or used
-for any USG-authorized purpose.
-- This IS includes security measures (e.g., authentication and access controls)
-to protect USG interests--not for your personal benefit or privacy.
-- Notwithstanding the above, using this IS does not constitute consent to PM,
-LE or CI investigative searching or monitoring of the content of privileged
-communications, or work product, related to personal representation or
-services by attorneys, psychotherapists, or clergy, and their assistants.
-Such communications and work product are private and confidential. See User
-Agreement for details.
-`
-!
-line con 0
- password cisco
-line aux 0
-line vty 0 4
- exec-timeout 720 0
- password cisco
- login
- transport input telnet ssh
-!
-no scheduler allocate
-!
-end</entry>
-        </extensions>
-        <interface id="0" name="GigabitEthernet0/1"/>
-        <interface id="1" name="GigabitEthernet0/2"/>
-        <interface id="3" name="GigabitEthernet0/4"/>
-    </node>
-    <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="396,563">
+    <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="408,563">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 18:55:21 UTC Tue May 19 2015
@@ -1741,7 +1337,7 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
     </node>
-    <node name="PAFB-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="991,563">
+    <node name="PAFB-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="1006,563">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 18:55:35 UTC Tue May 19 2015
@@ -3003,25 +2599,214 @@ write_files:
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
+    <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="FORTiOS" location="404,407" vmImage="FORTiOS-5 [7e58baed-2667-4332-acba-ed7263974ae1]" vmFlavor="FORTiOS [a8a4852a-7795-43df-aabc-47ac27869f8a]">
+        <extensions>
+            <entry key="config" type="String">#config-version=FGVMK6-5.02-FW-build589-140613:opmode=0:vdom=1:user=admin&#xD;
+#conf_file_ver=17054064819681458245&#xD;
+#buildno=0589&#xD;
+#global_vdom=1&#xD;
+&#xD;
+config vdom&#xD;
+edit root&#xD;
+next&#xD;
+edit MGMT&#xD;
+next&#xD;
+end&#xD;
+&#xD;
+config global&#xD;
+config system global&#xD;
+    set fgd-alert-subscription advisory latest-threat&#xD;
+    set hostname "CMAF-MSCI-FW-01"&#xD;
+    set optimize antivirus&#xD;
+    set timezone 04&#xD;
+    set vdom-admin enable&#xD;
+end&#xD;
+config system accprofile&#xD;
+    edit "prof_admin"&#xD;
+        set mntgrp read-write&#xD;
+        set admingrp read-write&#xD;
+        set updategrp read-write&#xD;
+        set authgrp read-write&#xD;
+        set sysgrp read-write&#xD;
+        set netgrp read-write&#xD;
+        set loggrp read-write&#xD;
+        set routegrp read-write&#xD;
+        set fwgrp read-write&#xD;
+        set vpngrp read-write&#xD;
+        set utmgrp read-write&#xD;
+        set wanoptgrp read-write&#xD;
+        set endpoint-control-grp read-write&#xD;
+        set wifi read-write&#xD;
+    next&#xD;
+end&#xD;
+config system interface&#xD;
+    edit "port1"&#xD;
+        set vdom "root"&#xD;
+        set type physical&#xD;
+        set snmp-index 1&#xD;
+    next&#xD;
+    edit "port2"&#xD;
+        set vdom "root"&#xD;
+        set ip 10.200.200.14 255.255.255.252&#xD;
+        set allowaccess ping&#xD;
+        set type physical&#xD;
+        set alias "CMAF-MSCI-OR-01-SIPR"&#xD;
+        set snmp-index 2&#xD;
+    next&#xD;
+    edit "port3"&#xD;
+        set vdom "root"&#xD;
+        set ip 10.200.200.22 255.255.255.252&#xD;
+        set allowaccess ping&#xD;
+        set type physical&#xD;
+        set alias "CMAF-MSCI-IR-01"&#xD;
+        set snmp-index 3&#xD;
+    next&#xD;
+    edit "port4"&#xD;
+        set vdom "root"&#xD;
+        set ip 172.16.1.10 255.255.255.0&#xD;
+        set allowaccess ping https ssh http fgfm&#xD;
+        set type physical&#xD;
+        set snmp-index 4&#xD;
+    next&#xD;
+    edit "port5"&#xD;
+        set vdom "root"&#xD;
+        set ip 10.200.200.10 255.255.255.252&#xD;
+        set allowaccess ping &#xD;
+        set type physical&#xD;
+        set alias "CMAF-MSCI-OR-01-CSNI"&#xD;
+        set snmp-index 4&#xD;
+    next&#xD;
+    edit "port6"&#xD;
+        set vdom "root"&#xD;
+        set type physical&#xD;
+        set snmp-index 6&#xD;
+    next&#xD;
+    edit "port7"&#xD;
+        set vdom "root"&#xD;
+        set type physical&#xD;
+        set snmp-index 7&#xD;
+    next&#xD;
+    edit "ssl.root"&#xD;
+        set vdom "root"&#xD;
+        set type tunnel&#xD;
+        set alias "SSL VPN interface"&#xD;
+        set snmp-index 8&#xD;
+    next&#xD;
+    edit "ssl.MGMT"&#xD;
+        set vdom "MGMT"&#xD;
+        set type tunnel&#xD;
+        set alias "SSL VPN interface"&#xD;
+        set snmp-index 9&#xD;
+    next&#xD;
+end&#xD;
+config vdom&#xD;
+edit root&#xD;
+config router static&#xD;
+    edit 1&#xD;
+        set gateway 172.16.1.1&#xD;
+        set device "port4"&#xD;
+    next&#xD;
+end&#xD;
+config router ospf&#xD;
+    set router-id 10.200.200.37&#xD;
+        config area&#xD;
+            edit 0.0.0.0&#xD;
+                set authentication md5&#xD;
+            next&#xD;
+        end&#xD;
+        config ospf-interface&#xD;
+            edit "CMAF_INSIDE"&#xD;
+                set interface "port3"&#xD;
+                set ip 10.200.200.22&#xD;
+                set authentication md5&#xD;
+                set md5-key 1 "ENC yfY7Xzk8f4hEYfiZD3esJnchmlFu"&#xD;
+                set dead-interval 40&#xD;
+                set hello-interval 10&#xD;
+            next&#xD;
+            edit "SIPR_OUTSIDE"&#xD;
+                set interface "port2"&#xD;
+                set ip 10.200.200.14&#xD;
+                set authentication md5&#xD;
+                set md5-key 1 "ENC r4akX7j9ZzFBZM28kiHP9IOMYGVp"&#xD;
+                set dead-interval 40&#xD;
+                set hello-interval 10&#xD;
+            next&#xD;
+            edit "CSNI_OUTSIDE"&#xD;
+                set interface "port5"&#xD;
+                set ip 10.200.200.10&#xD;
+                set authentication md5&#xD;
+                set md5-key 1 "ENC r4akX7j9ZzFBZM28kiHP9IOMYGVp"&#xD;
+                set dead-interval 40&#xD;
+                set hello-interval 10&#xD;
+            next&#xD;
+        end&#xD;
+        config network&#xD;
+            edit 1&#xD;
+                set prefix 10.200.200.20 255.255.255.252&#xD;
+            next&#xD;
+            edit 2&#xD;
+                set prefix 10.200.200.12 255.255.255.252&#xD;
+            next&#xD;
+            edit 2&#xD;
+                set prefix 10.200.200.8 255.255.255.252&#xD;
+            next&#xD;
+&#xD;
+        end&#xD;
+        config redistribute "connected"&#xD;
+        end&#xD;
+        config redistribute "static"&#xD;
+        end&#xD;
+        config redistribute "rip"&#xD;
+        end&#xD;
+        config redistribute "bgp"&#xD;
+        end&#xD;
+        config redistribute "isis"&#xD;
+        end&#xD;
+end&#xD;
+end&#xD;
+</entry>
+        </extensions>
+        <interface id="0" name="port2"/>
+        <interface id="1" name="port3"/>
+        <interface id="2" name="port4"/>
+        <interface id="3" name="port5"/>
+    </node>
+    <node name="PAFB-MSCI-FW-01" type="SIMPLE" subtype="FORTiOS" location="1002,407" vmImage="FORTiOS-5 [7e58baed-2667-4332-acba-ed7263974ae1]" vmFlavor="FORTiOS [a8a4852a-7795-43df-aabc-47ac27869f8a]">
+        <interface id="0" name="port2"/>
+        <interface id="1" name="port3"/>
+        <interface id="2" name="port4"/>
+        <interface id="3" name="port5"/>
+    </node>
+    <node name="flat-1" type="ASSET" subtype="FLAT" location="742,315">
+        <interface id="0" name="link0"/>
+    </node>
+    <node name="iosvl2-1" type="SIMPLE" subtype="IOSvL2" location="734,413">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+    </node>
     <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[9]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[10]/virl:interface[1]" src="/virl:topology/virl:node[7]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[7]/virl:interface[3]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[5]/virl:interface[2]" src="/virl:topology/virl:node[3]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[4]/virl:interface[3]" src="/virl:topology/virl:node[6]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[2]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[2]/virl:interface[3]" src="/virl:topology/virl:node[1]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[11]/virl:interface[1]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[12]/virl:interface[1]" src="/virl:topology/virl:node[8]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[6]/virl:interface[1]" src="/virl:topology/virl:node[8]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[11]/virl:interface[2]" src="/virl:topology/virl:node[9]/virl:interface[2]"/>
-    <connection dst="/virl:topology/virl:node[12]/virl:interface[2]" src="/virl:topology/virl:node[10]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[9]/virl:interface[1]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[10]/virl:interface[1]" src="/virl:topology/virl:node[6]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[9]/virl:interface[2]" src="/virl:topology/virl:node[7]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[10]/virl:interface[2]" src="/virl:topology/virl:node[8]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[3]" src="/virl:topology/virl:node[7]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[10]/virl:interface[3]" src="/virl:topology/virl:node[9]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[12]/virl:interface[3]" src="/virl:topology/virl:node[11]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[3]/virl:interface[4]" src="/virl:topology/virl:node[5]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[4]/virl:interface[4]" src="/virl:topology/virl:node[6]/virl:interface[3]"/>
-    <connection dst="/virl:topology/virl:node[1]/virl:interface[4]" src="/virl:topology/virl:node[14]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[4]" src="/virl:topology/virl:node[12]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[10]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[2]" src="/virl:topology/virl:node[5]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[6]/virl:interface[3]" src="/virl:topology/virl:node[14]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[1]" src="/virl:topology/virl:node[15]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[16]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[3]" src="/virl:topology/virl:node[16]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[4]" src="/virl:topology/virl:node[3]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[4]"/>
 </topology>
