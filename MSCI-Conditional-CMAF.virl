@@ -3,7 +3,7 @@
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="619,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:58:03 UTC Tue May 26 2015
+! Last configuration change at 16:27:43 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -73,7 +73,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.169 255.255.0.0
+ ip address 10.255.0.188 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -221,7 +221,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="888,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:57:58 UTC Tue May 26 2015
+! Last configuration change at 15:15:26 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -291,7 +291,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.170 255.255.0.0
+ ip address 10.255.0.189 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -430,7 +430,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="423,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:58:55 UTC Tue May 26 2015
+! Last configuration change at 16:31:02 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -517,7 +517,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.182 255.255.0.0
+ ip address 10.255.0.201 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -666,6 +666,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip nat inside source static 10.10.10.10 50.50.50.10 vrf CSNI
 ip nat inside source static 10.200.200.22 50.50.50.22 vrf CSNI
 ip nat inside source static 10.0.100.40 50.50.50.40 vrf CSNI
 ip route vrf CSNI 50.50.50.0 255.255.255.0 Null0
@@ -815,7 +816,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="1095,364">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:59:12 UTC Tue May 26 2015
+! Last configuration change at 16:32:28 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -905,7 +906,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.176 255.255.0.0
+ ip address 10.255.0.195 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1171,7 +1172,7 @@ end</entry>
     <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="384,681">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:59:05 UTC Tue May 26 2015
+! Last configuration change at 16:33:08 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1241,7 +1242,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.178 255.255.0.0
+ ip address 10.255.0.197 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1283,6 +1284,11 @@ interface GigabitEthernet0/3.26
  encapsulation dot1Q 26
  ip address 10.200.200.49 255.255.255.248
 !
+interface GigabitEthernet0/3.27
+ encapsulation dot1Q 27
+ ip address 10.200.200.41 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
+!
 interface GigabitEthernet0/4
  no ip address
  shutdown
@@ -1306,6 +1312,7 @@ router ospf 1001
  network 10.200.200.25 0.0.0.0 area 0
  network 10.200.200.29 0.0.0.0 area 0
  network 10.200.200.34 0.0.0.0 area 0
+ network 10.200.200.41 0.0.0.0 area 0
  network 10.200.200.49 0.0.0.0 area 0
  network 10.200.200.57 0.0.0.0 area 0
 !
@@ -1405,7 +1412,7 @@ end</entry>
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="609,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 15:01:06 UTC Tue May 26 2015
+! Last configuration change at 16:34:41 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1474,7 +1481,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.179 255.255.0.0
+ ip address 10.255.0.198 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1645,7 +1652,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="609,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 15:01:18 UTC Tue May 26 2015
+! Last configuration change at 16:34:06 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1714,7 +1721,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.180 255.255.0.0
+ ip address 10.255.0.199 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1879,7 +1886,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="880,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 15:00:06 UTC Tue May 26 2015
+! Last configuration change at 16:34:40 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1948,7 +1955,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.172 255.255.0.0
+ ip address 10.255.0.191 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -2113,7 +2120,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="880,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:59:55 UTC Tue May 26 2015
+! Last configuration change at 16:32:49 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -2182,7 +2189,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.173 255.255.0.0
+ ip address 10.255.0.192 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -2507,7 +2514,7 @@ end</entry>
     <node name="CMAF-MSCI-IS-01" type="SIMPLE" subtype="IOSvL2" location="409,531">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 15:53:01 MDT Tue May 26 2015
+! Last configuration change at 17:25:49 MDT Tue May 26 2015
 !
 version 15.2
 no service pad
@@ -2568,6 +2575,9 @@ vlan 25
 vlan 26
  name MCCBS-TRAFFIC
 !
+vlan 27
+ name NEN-TRAFFIC
+!
 ip tcp synwait-time 10
 ip ssh time-out 30
 ip ssh version 2
@@ -2590,7 +2600,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description CMAF-MSCI-IR-01 G0/0/0 Mission Traffic
- switchport trunk allowed vlan 24-26
+ switchport trunk allowed vlan 24-27
  switchport trunk encapsulation dot1q
  switchport mode trunk
  media-type rj45
@@ -2603,6 +2613,9 @@ interface GigabitEthernet0/2
  negotiation auto
 !
 interface GigabitEthernet0/3
+ description &lt;== CMAF-MSCI-FW-01 Port04 NEN Traffic ==&gt;
+ switchport access vlan 27
+ switchport mode access
  media-type rj45
  negotiation auto
 !
@@ -2721,6 +2734,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="7" name="GigabitEthernet2/0"/>
         <interface id="8" name="GigabitEthernet2/1"/>
         <interface id="9" name="GigabitEthernet2/2"/>
@@ -2731,7 +2745,7 @@ end</entry>
     <node name="CMAF-MSCI-OS-01" type="SIMPLE" subtype="IOSvL2" location="423,316">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:52:20 UTC Tue May 26 2015
+! Last configuration change at 16:24:40 UTC Tue May 26 2015
 !
 version 15.2
 no service pad
@@ -3058,7 +3072,7 @@ write_files:
     <node name="NEN-ROUTER" type="SIMPLE" subtype="IOSv" location="215,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 15:02:32 UTC Tue May 26 2015
+! Last configuration change at 16:35:39 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -3121,7 +3135,7 @@ redundancy
 !
 !
 interface GigabitEthernet0/0
- no ip address
+ ip address 10.255.0.186 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -3279,14 +3293,15 @@ write_files:
     <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[8]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[9]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[3]" src="/virl:topology/virl:node[15]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[4]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[7]" src="/virl:topology/virl:node[14]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[8]" src="/virl:topology/virl:node[3]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[4]" src="/virl:topology/virl:node[15]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[5]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[6]" src="/virl:topology/virl:node[5]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[8]" src="/virl:topology/virl:node[14]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[9]" src="/virl:topology/virl:node[3]/virl:interface[5]"/>
     <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[14]/virl:interface[6]"/>
     <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[12]/virl:interface[6]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[6]" src="/virl:topology/virl:node[12]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[7]" src="/virl:topology/virl:node[12]/virl:interface[5]"/>
     <connection dst="/virl:topology/virl:node[3]/virl:interface[4]" src="/virl:topology/virl:node[18]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[18]/virl:interface[2]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[3]" src="/virl:topology/virl:node[12]/virl:interface[3]"/>
 </topology>
