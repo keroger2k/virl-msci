@@ -3,7 +3,7 @@
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="619,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:42:18 UTC Sun May 24 2015
+! Last configuration change at 13:58:03 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -73,7 +73,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.134 255.255.0.0
+ ip address 10.255.0.169 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -221,7 +221,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="888,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:41:47 UTC Sun May 24 2015
+! Last configuration change at 13:57:58 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -291,7 +291,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.135 255.255.0.0
+ ip address 10.255.0.170 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -430,7 +430,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="423,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:17:11 UTC Sun May 24 2015
+! Last configuration change at 14:58:55 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -517,7 +517,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.146 255.255.0.0
+ ip address 10.255.0.182 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -579,7 +579,12 @@ interface GigabitEthernet0/3.21
  ip ospf message-digest-key 1 md5 password
 !
 interface GigabitEthernet0/4
- no ip address
+ ip vrf forwarding SIPR
+ ip address 10.200.200.17 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
  media-type rj45
@@ -596,6 +601,7 @@ router ospf 1001 vrf SIPR
  capability vrf-lite
  area 0 authentication message-digest
  network 10.200.200.13 0.0.0.0 area 0
+ network 10.200.200.17 0.0.0.0 area 0
  network 10.200.200.32 0.0.0.0 area 0
 !
 router ospf 1002 vrf CSNI
@@ -809,7 +815,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="1095,364">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:16:30 UTC Sun May 24 2015
+! Last configuration change at 14:59:12 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -899,7 +905,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.140 255.255.0.0
+ ip address 10.255.0.176 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1165,7 +1171,7 @@ end</entry>
     <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="384,681">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:12:44 UTC Sun May 24 2015
+! Last configuration change at 14:59:05 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1235,7 +1241,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.142 255.255.0.0
+ ip address 10.255.0.178 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1399,7 +1405,7 @@ end</entry>
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="609,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:17:33 UTC Sun May 24 2015
+! Last configuration change at 15:01:06 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1468,7 +1474,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.143 255.255.0.0
+ ip address 10.255.0.179 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1639,7 +1645,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="609,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:21:53 UTC Sun May 24 2015
+! Last configuration change at 15:01:18 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1708,7 +1714,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.144 255.255.0.0
+ ip address 10.255.0.180 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1873,7 +1879,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="880,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:18:55 UTC Sun May 24 2015
+! Last configuration change at 15:00:06 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1942,7 +1948,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.136 255.255.0.0
+ ip address 10.255.0.172 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -2107,7 +2113,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="880,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:18:14 UTC Sun May 24 2015
+! Last configuration change at 14:59:55 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -2176,7 +2182,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.137 255.255.0.0
+ ip address 10.255.0.173 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -2473,21 +2479,21 @@ write_files:
     </node>
     <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="FORTiOS" location="422,407" vmImage="FORTiOS-5" vmFlavor="FORTiOS">
         <extensions>
-            <entry key="config" type="String">#config-version=FGVMK6-5.02-FW-build589-140613:opmode=0:vdom=1:user=admin&#xD;
-config system interface&#xD;
-    edit "port7"&#xD;
-        set vdom "root"&#xD;
-        set ip 172.16.1.10 255.255.255.0&#xD;
-        set allowaccess ping https http&#xD;
-        set type physical&#xD;
-        set snmp-index 7&#xD;
-    next&#xD;
-end&#xD;
-config router static&#xD;
-    edit 1&#xD;
-        set gateway 172.16.1.1&#xD;
-        set device "port7"&#xD;
-    next&#xD;
+            <entry key="config" type="String">#config-version=FGVMK6-5.02-FW-build589-140613:opmode=0:vdom=1:user=admin
+config system interface
+    edit "port7"
+        set vdom "root"
+        set ip 172.16.1.10 255.255.255.0
+        set allowaccess ping https http
+        set type physical
+        set snmp-index 7
+    next
+end
+config router static
+    edit 1
+        set gateway 172.16.1.1
+        set device "port7"
+    next
 end</entry>
         </extensions>
         <interface id="0" name="port2"/>
@@ -2501,7 +2507,7 @@ end</entry>
     <node name="CMAF-MSCI-IS-01" type="SIMPLE" subtype="IOSvL2" location="409,531">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:57:42 MDT Sun May 24 2015
+! Last configuration change at 15:53:01 MDT Tue May 26 2015
 !
 version 15.2
 no service pad
@@ -2725,7 +2731,7 @@ end</entry>
     <node name="CMAF-MSCI-OS-01" type="SIMPLE" subtype="IOSvL2" location="423,316">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 18:54:38 UTC Sun May 24 2015
+! Last configuration change at 14:52:20 UTC Tue May 26 2015
 !
 version 15.2
 no service pad
@@ -2928,126 +2934,330 @@ end</entry>
     </node>
     <node name="US-DNS-SERVER" type="SIMPLE" subtype="server" location="260,475">
         <extensions>
-            <entry key="config" type="String">#cloud-config&#xD;
-bootcmd:&#xD;
-- ln -s -t /etc/rc.d /etc/rc.local&#xD;
-hostname: US-DNS-SERVER&#xD;
-manage_etc_hosts: true&#xD;
-runcmd:&#xD;
-- start ttyS0&#xD;
-- systemctl start getty@ttyS0.service&#xD;
-- systemctl start rc-local&#xD;
-- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config&#xD;
-- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config&#xD;
-- service ssh restart&#xD;
-- service sshd restart&#xD;
-users:&#xD;
-- default&#xD;
-- gecos: User configured by VIRL Configuration Engine 0.15.5&#xD;
-  lock-passwd: false&#xD;
-  name: cisco&#xD;
-  plain-text-passwd: cisco&#xD;
-  shell: /bin/bash&#xD;
-  ssh-authorized-keys:&#xD;
-  - VIRL-USER-SSH-PUBLIC-KEY&#xD;
-  sudo: ALL=(ALL) ALL&#xD;
-write_files:&#xD;
-- path: /etc/init/ttyS0.conf&#xD;
-  owner: root:root&#xD;
-  content: |&#xD;
-    # ttyS0 - getty&#xD;
-    # This service maintains a getty on ttyS0 from the point the system is&#xD;
-    # started until it is shut down again.&#xD;
-    start on stopped rc or RUNLEVEL=[12345]&#xD;
-    stop on runlevel [!12345]&#xD;
-    respawn&#xD;
-    exec /sbin/getty -L 115200 ttyS0 vt102&#xD;
-  permissions: '0644'&#xD;
-- path: /etc/systemd/system/dhclient@.service&#xD;
-  content: |&#xD;
-    [Unit]&#xD;
-    Description=Run dhclient on %i interface&#xD;
-    After=network.target&#xD;
-    [Service]&#xD;
-    Type=oneshot&#xD;
-    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease&#xD;
-    RemainAfterExit=yes&#xD;
-  owner: root:root&#xD;
-  permissions: '0644'&#xD;
-- path: /etc/rc.local&#xD;
-  owner: root:root&#xD;
-  permissions: '0755'&#xD;
-  content: |-&#xD;
-    #!/bin/sh -e&#xD;
-    ifconfig eth1 up 10.200.200.60 netmask 255.255.255.248&#xD;
-    route add -net 0.0.0.0/0 gw 10.200.200.57 dev eth1&#xD;
-    exit 0&#xD;
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-DNS-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.200.200.60 netmask 255.255.255.248
+    route add -net 0.0.0.0/0 gw 10.200.200.57 dev eth1
+    exit 0
 </entry>
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
     <node name="US-MCCBS-SERVER" type="SIMPLE" subtype="server" location="258,539">
         <extensions>
-            <entry key="config" type="String">#cloud-config&#xD;
-bootcmd:&#xD;
-- ln -s -t /etc/rc.d /etc/rc.local&#xD;
-hostname: US-MCCBS-SERVER&#xD;
-manage_etc_hosts: true&#xD;
-runcmd:&#xD;
-- start ttyS0&#xD;
-- systemctl start getty@ttyS0.service&#xD;
-- systemctl start rc-local&#xD;
-- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config&#xD;
-- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config&#xD;
-- service ssh restart&#xD;
-- service sshd restart&#xD;
-users:&#xD;
-- default&#xD;
-- gecos: User configured by VIRL Configuration Engine 0.15.5&#xD;
-  lock-passwd: false&#xD;
-  name: cisco&#xD;
-  plain-text-passwd: cisco&#xD;
-  shell: /bin/bash&#xD;
-  ssh-authorized-keys:&#xD;
-  - VIRL-USER-SSH-PUBLIC-KEY&#xD;
-  sudo: ALL=(ALL) ALL&#xD;
-write_files:&#xD;
-- path: /etc/init/ttyS0.conf&#xD;
-  owner: root:root&#xD;
-  content: |&#xD;
-    # ttyS0 - getty&#xD;
-    # This service maintains a getty on ttyS0 from the point the system is&#xD;
-    # started until it is shut down again.&#xD;
-    start on stopped rc or RUNLEVEL=[12345]&#xD;
-    stop on runlevel [!12345]&#xD;
-    respawn&#xD;
-    exec /sbin/getty -L 115200 ttyS0 vt102&#xD;
-  permissions: '0644'&#xD;
-- path: /etc/systemd/system/dhclient@.service&#xD;
-  content: |&#xD;
-    [Unit]&#xD;
-    Description=Run dhclient on %i interface&#xD;
-    After=network.target&#xD;
-    [Service]&#xD;
-    Type=oneshot&#xD;
-    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease&#xD;
-    RemainAfterExit=yes&#xD;
-  owner: root:root&#xD;
-  permissions: '0644'&#xD;
-- path: /etc/rc.local&#xD;
-  owner: root:root&#xD;
-  permissions: '0755'&#xD;
-  content: |-&#xD;
-    #!/bin/sh -e&#xD;
-    ifconfig eth1 up 10.200.200.52 netmask 255.255.255.248&#xD;
-    route add -net 0.0.0.0/0 gw 10.200.200.49 dev eth1&#xD;
-    exit 0&#xD;
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-MCCBS-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.200.200.52 netmask 255.255.255.248
+    route add -net 0.0.0.0/0 gw 10.200.200.49 dev eth1
+    exit 0
 </entry>
         </extensions>
         <interface id="0" name="eth1"/>
     </node>
     <node name="flat-1" type="ASSET" subtype="FLAT" location="301,318">
         <interface id="0" name="link0"/>
+    </node>
+    <node name="NEN-ROUTER" type="SIMPLE" subtype="IOSv" location="215,223">
+        <extensions>
+            <entry key="config" type="String">!
+! Last configuration change at 15:02:32 UTC Tue May 26 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname NEN-ROUTER
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address 10.200.200.18 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ ip address 10.10.10.1 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ router-id 10.200.200.18
+ area 0 authentication message-digest
+ passive-interface GigabitEthernet0/2
+ network 10.10.10.1 0.0.0.0 area 0
+ network 10.200.200.18 0.0.0.0 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+    </node>
+    <node name="NEN-SERVER" type="SIMPLE" subtype="server" location="46,219">
+        <extensions>
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-NEN-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.10.10.10 netmask 255.255.255.0
+    route add -net 0.0.0.0/0 gw 10.10.10.1 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface id="0" name="eth1"/>
     </node>
     <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[6]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
@@ -3077,4 +3287,6 @@ write_files:&#xD;
     <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[14]/virl:interface[6]"/>
     <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[12]/virl:interface[6]"/>
     <connection dst="/virl:topology/virl:node[13]/virl:interface[6]" src="/virl:topology/virl:node[12]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[4]" src="/virl:topology/virl:node[18]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[2]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
 </topology>
