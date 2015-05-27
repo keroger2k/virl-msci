@@ -430,7 +430,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="423,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:02:25 UTC Tue May 26 2015
+! Last configuration change at 15:35:35 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -601,8 +601,8 @@ router ospf 1001 vrf SIPR
  router-id 10.200.200.32
  capability vrf-lite
  area 0 authentication message-digest
+ redistribute ospf 1000 subnets route-map NEN-ROUTES-TO-SIPR
  network 10.200.200.13 0.0.0.0 area 0
- network 10.200.200.17 0.0.0.0 area 0
  network 10.200.200.32 0.0.0.0 area 0
 !
 router ospf 1002 vrf CSNI
@@ -612,6 +612,12 @@ router ospf 1002 vrf CSNI
  redistribute bgp 300 metric 300 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.200.200.9 0.0.0.0 area 0
  network 10.200.200.33 0.0.0.0 area 0
+!
+router ospf 1000 vrf SIPR
+ router-id 10.200.200.17
+ area 0 authentication message-digest
+ redistribute ospf 1001 subnets route-map CSNI-ROUTES-INTO-OSPF
+ network 10.200.200.17 0.0.0.0 area 0
 !
 router bgp 300
  bgp router-id 10.200.200.33
@@ -703,6 +709,8 @@ ip prefix-list CMAF-CORE2-LOOPBACK seq 5 permit 10.200.200.36/32
 !
 ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
+ip prefix-list NEN-ADDRESS-SPACE seq 5 permit 10.10.10.0/24 le 32
+!
 ip prefix-list US-NATPOOL-ONLY seq 5 permit 50.50.50.0/24
 logging trap notifications
 !
@@ -729,6 +737,9 @@ route-map CORE-REACHABLE permit 10
 !
 route-map CORE-REACHABLE permit 20
  match ip address prefix-list CMAF-CORE2-LOOPBACK
+!
+route-map NEN-ROUTES-TO-SIPR permit 10
+ match ip address prefix-list NEN-ADDRESS-SPACE
 !
 !
 !
@@ -817,7 +828,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="1095,364">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:06:31 UTC Tue May 26 2015
+! Last configuration change at 15:59:11 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1173,7 +1184,7 @@ end</entry>
     <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="384,681">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:08:35 UTC Tue May 26 2015
+! Last configuration change at 16:14:27 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1272,12 +1283,6 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
 !
-interface GigabitEthernet0/3.24
- description &lt;== CSNI Bound Traffic ==&gt;
- encapsulation dot1Q 24
- ip address 10.200.200.21 255.255.255.252
- ip ospf message-digest-key 1 md5 password
-!
 interface GigabitEthernet0/3.25
  description &lt;== DNS Subnet ==&gt;
  encapsulation dot1Q 25
@@ -1287,6 +1292,7 @@ interface GigabitEthernet0/3.26
  description &lt;== MCCBS Server Policy Based Traffic ==&gt;
  encapsulation dot1Q 26
  ip address 10.200.200.49 255.255.255.248
+ ip ospf message-digest-key 1 md5 password
 !
 interface GigabitEthernet0/3.27
  description &lt;== NEN Based Traffic ==&gt;
@@ -1312,10 +1318,8 @@ interface GigabitEthernet0/5
 router ospf 1001
  area 0 authentication message-digest
  passive-interface GigabitEthernet0/3.25
- passive-interface GigabitEthernet0/3.26
  passive-interface GigabitEthernet0/5
  network 10.200.199.1 0.0.0.0 area 0
- network 10.200.200.21 0.0.0.0 area 0
  network 10.200.200.25 0.0.0.0 area 0
  network 10.200.200.29 0.0.0.0 area 0
  network 10.200.200.34 0.0.0.0 area 0
@@ -1419,7 +1423,7 @@ end</entry>
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="609,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:12:41 UTC Tue May 26 2015
+! Last configuration change at 16:37:09 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1659,7 +1663,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="609,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:11:07 UTC Tue May 26 2015
+! Last configuration change at 16:30:50 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1893,7 +1897,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="880,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:13:30 UTC Tue May 26 2015
+! Last configuration change at 16:44:46 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -2127,7 +2131,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="880,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:07:22 UTC Tue May 26 2015
+! Last configuration change at 16:02:47 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -2521,7 +2525,7 @@ end</entry>
     <node name="CMAF-MSCI-IS-01" type="SIMPLE" subtype="IOSvL2" location="409,531">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:46:33 MDT Tue May 26 2015
+! Last configuration change at 14:56:43 MDT Wed May 27 2015
 !
 version 15.2
 no service pad
@@ -2573,9 +2577,6 @@ vlan internal allocation policy ascending
 vlan 23
  name Management
 !
-vlan 24
- name CSNI-TRAFFIC
-!
 vlan 25
  name DNSSEC-TRAFFIC
 !
@@ -2607,14 +2608,15 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description CMAF-MSCI-IR-01 G0/0/0 Mission Traffic
- switchport trunk allowed vlan 24-27
+ switchport trunk allowed vlan 25-27
  switchport trunk encapsulation dot1q
  switchport mode trunk
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet0/2
- switchport access vlan 24
+ description &lt;== CMAF-MSCI-FW-01 CSNI Mission Traffic  Port 5 ==&gt;
+ switchport access vlan 26
  switchport mode access
  media-type rj45
  negotiation auto
@@ -2752,7 +2754,7 @@ end</entry>
     <node name="CMAF-MSCI-OS-01" type="SIMPLE" subtype="IOSvL2" location="423,316">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 18:43:44 UTC Tue May 26 2015
+! Last configuration change at 13:39:27 UTC Wed May 27 2015
 !
 version 15.2
 no service pad
@@ -3079,7 +3081,7 @@ write_files:
     <node name="NEN-ROUTER" type="SIMPLE" subtype="IOSv" location="215,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 19:16:34 UTC Tue May 26 2015
+! Last configuration change at 17:03:50 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
