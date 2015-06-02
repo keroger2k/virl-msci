@@ -3,7 +3,7 @@
     <node name="CSNI-OR-01" type="SIMPLE" subtype="IOSv" location="619,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:03:32 UTC Sun May 24 2015
+! Last configuration change at 16:27:43 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -73,7 +73,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.117 255.255.0.0
+ ip address 10.255.0.188 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -221,7 +221,7 @@ end</entry>
     <node name="CSNI-OR-02" type="SIMPLE" subtype="IOSv" location="888,116">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:03:35 UTC Sun May 24 2015
+! Last configuration change at 15:15:26 UTC Tue May 26 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -291,7 +291,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.118 255.255.0.0
+ ip address 10.255.0.189 255.255.0.0
  duplex auto
  speed auto
  media-type rj45
@@ -430,7 +430,7 @@ end</entry>
     <node name="CMAF-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="423,223">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:35 UTC Sun May 24 2015
+! Last configuration change at 15:35:35 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -517,7 +517,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.129 255.255.0.0
+ ip address 10.255.0.201 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -579,11 +579,12 @@ interface GigabitEthernet0/3.21
  ip ospf message-digest-key 1 md5 password
 !
 interface GigabitEthernet0/4
- description to CMAF-MSCI-FW-01 - CSNI
- ip vrf forwarding CSNI
- no ip address
- ip nat inside
- ip virtual-reassembly in
+ description &lt;== NEN-Router G0/1 ==&gt;
+ ip vrf forwarding SIPR
+ ip address 10.200.200.17 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
  ip ospf message-digest-key 1 md5 password
  duplex auto
  speed auto
@@ -600,6 +601,7 @@ router ospf 1001 vrf SIPR
  router-id 10.200.200.32
  capability vrf-lite
  area 0 authentication message-digest
+ redistribute ospf 1000 subnets route-map NEN-ROUTES-TO-SIPR
  network 10.200.200.13 0.0.0.0 area 0
  network 10.200.200.32 0.0.0.0 area 0
 !
@@ -610,6 +612,12 @@ router ospf 1002 vrf CSNI
  redistribute bgp 300 metric 300 subnets route-map CSNI-ROUTES-INTO-OSPF
  network 10.200.200.9 0.0.0.0 area 0
  network 10.200.200.33 0.0.0.0 area 0
+!
+router ospf 1000 vrf SIPR
+ router-id 10.200.200.17
+ area 0 authentication message-digest
+ redistribute ospf 1001 subnets route-map CSNI-ROUTES-INTO-OSPF
+ network 10.200.200.17 0.0.0.0 area 0
 !
 router bgp 300
  bgp router-id 10.200.200.33
@@ -665,6 +673,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
+ip nat inside source static 10.10.10.10 50.50.50.10 vrf CSNI
 ip nat inside source static 10.200.200.22 50.50.50.22 vrf CSNI
 ip nat inside source static 10.0.100.40 50.50.50.40 vrf CSNI
 ip route vrf CSNI 50.50.50.0 255.255.255.0 Null0
@@ -700,6 +709,8 @@ ip prefix-list CMAF-CORE2-LOOPBACK seq 5 permit 10.200.200.36/32
 !
 ip prefix-list CSNI-SERVERS-NATPOOL seq 5 permit 10.0.200.32/27
 !
+ip prefix-list NEN-ADDRESS-SPACE seq 5 permit 10.10.10.0/24 le 32
+!
 ip prefix-list US-NATPOOL-ONLY seq 5 permit 50.50.50.0/24
 logging trap notifications
 !
@@ -726,6 +737,9 @@ route-map CORE-REACHABLE permit 10
 !
 route-map CORE-REACHABLE permit 20
  match ip address prefix-list CMAF-CORE2-LOOPBACK
+!
+route-map NEN-ROUTES-TO-SIPR permit 10
+ match ip address prefix-list NEN-ADDRESS-SPACE
 !
 !
 !
@@ -814,7 +828,7 @@ end</entry>
     <node name="PAFB-MSCI-OR-01" type="SIMPLE" subtype="IOSv" location="1095,364">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:32:58 UTC Sun May 24 2015
+! Last configuration change at 15:59:11 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -904,7 +918,7 @@ interface Loopback3
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.123 255.255.0.0
+ ip address 10.255.0.195 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1170,7 +1184,7 @@ end</entry>
     <node name="CMAF-MSCI-IR-01" type="SIMPLE" subtype="IOSv" location="384,681">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:48 UTC Sun May 24 2015
+! Last configuration change at 16:14:27 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1240,7 +1254,7 @@ interface Loopback0
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.125 255.255.0.0
+ ip address 10.255.0.197 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1264,13 +1278,30 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to CMAF-MSCI-FW-01
- ip address 10.200.200.21 255.255.255.252
- ip ospf message-digest-key 1 md5 password
+ no ip address
  duplex auto
  speed auto
  media-type rj45
 !
+interface GigabitEthernet0/3.25
+ description &lt;== DNS Subnet ==&gt;
+ encapsulation dot1Q 25
+ ip address 10.200.200.57 255.255.255.248
+!
+interface GigabitEthernet0/3.26
+ description &lt;== MCCBS Server Policy Based Traffic ==&gt;
+ encapsulation dot1Q 26
+ ip address 10.200.200.49 255.255.255.248
+ ip ospf message-digest-key 1 md5 password
+!
+interface GigabitEthernet0/3.27
+ description &lt;== NEN Based Traffic ==&gt;
+ encapsulation dot1Q 27
+ ip address 10.200.200.41 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
+!
 interface GigabitEthernet0/4
+ description &lt;== NOT USED ==&gt;
  no ip address
  shutdown
  duplex auto
@@ -1278,6 +1309,7 @@ interface GigabitEthernet0/4
  media-type rj45
 !
 interface GigabitEthernet0/5
+ description &lt;== Management Subnet ==&gt;
  ip address 10.200.199.1 255.255.255.240
  duplex auto
  speed auto
@@ -1285,10 +1317,15 @@ interface GigabitEthernet0/5
 !
 router ospf 1001
  area 0 authentication message-digest
- network 10.200.200.21 0.0.0.0 area 0
+ passive-interface GigabitEthernet0/3.25
+ passive-interface GigabitEthernet0/5
+ network 10.200.199.1 0.0.0.0 area 0
  network 10.200.200.25 0.0.0.0 area 0
  network 10.200.200.29 0.0.0.0 area 0
  network 10.200.200.34 0.0.0.0 area 0
+ network 10.200.200.41 0.0.0.0 area 0
+ network 10.200.200.49 0.0.0.0 area 0
+ network 10.200.200.57 0.0.0.0 area 0
 !
 ip forward-protocol nd
 !
@@ -1386,7 +1423,7 @@ end</entry>
     <node name="CMAF-CORE-01" type="SIMPLE" subtype="IOSv" location="609,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:25 UTC Sun May 24 2015
+! Last configuration change at 16:37:09 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1455,7 +1492,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.126 255.255.0.0
+ ip address 10.255.0.198 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1485,8 +1522,10 @@ interface GigabitEthernet0/3
 router ospf 1
  area 0 authentication message-digest
  redistribute bgp 300 metric 400 subnets route-map CSNI-ROUTES-INTO-OSPF
+ passive-interface GigabitEthernet0/2
  network 10.200.200.26 0.0.0.0 area 0
  network 10.200.200.35 0.0.0.0 area 0
+ network 192.168.1.2 0.0.0.0 area 0
  network 192.168.3.1 0.0.0.0 area 0
 !
 router bgp 300
@@ -1624,7 +1663,7 @@ end</entry>
     <node name="CMAF-CORE-02" type="SIMPLE" subtype="IOSv" location="609,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:34 UTC Sun May 24 2015
+! Last configuration change at 16:30:50 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1693,7 +1732,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.127 255.255.0.0
+ ip address 10.255.0.199 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -1723,8 +1762,10 @@ interface GigabitEthernet0/3
 router ospf 1
  area 0 authentication message-digest
  redistribute bgp 300 metric 500 subnets route-map CSNI-ROUTES-INTO-OSPF
+ passive-interface GigabitEthernet0/2
  network 10.200.200.30 0.0.0.0 area 0
  network 10.200.200.36 0.0.0.0 area 0
+ network 192.168.2.2 0.0.0.0 area 0
  network 192.168.3.2 0.0.0.0 area 0
 !
 router bgp 300
@@ -1856,7 +1897,7 @@ end</entry>
     <node name="PAFB-CORE-01" type="SIMPLE" subtype="IOSv" location="880,422">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:41 UTC Sun May 24 2015
+! Last configuration change at 16:44:46 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -1925,14 +1966,14 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.119 255.255.0.0
+ ip address 10.255.0.191 255.255.0.0
  shutdown
  duplex auto
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/1
- description to PAFB-MSCI-IR-01
+ description &lt;== Connection to PAFB-MSCI-OR-01 G0/3 ==&gt;
  ip address 10.0.150.26 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
@@ -1940,12 +1981,14 @@ interface GigabitEthernet0/1
  media-type rj45
 !
 interface GigabitEthernet0/2
+ description &lt;== Connection to CMAF-CORE-01 G0/2 ==&gt;
  ip address 192.168.1.1 255.255.255.252
  duplex auto
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/3
+ description &lt;== Connection to PAFB-CORE-02 G0/3 ==&gt;
  ip address 192.168.4.1 255.255.255.252
  ip ospf message-digest-key 1 md5 password
  duplex auto
@@ -1955,8 +1998,10 @@ interface GigabitEthernet0/3
 router ospf 1
  area 0 authentication message-digest
  redistribute bgp 200 metric 300 subnets route-map CSNI-ROUTES-INTO-OSPF
+ passive-interface GigabitEthernet0/2
  network 10.0.150.26 0.0.0.0 area 0
  network 10.0.150.35 0.0.0.0 area 0
+ network 192.168.1.1 0.0.0.0 area 0
  network 192.168.4.1 0.0.0.0 area 0
 !
 router bgp 200
@@ -2086,7 +2131,7 @@ end</entry>
     <node name="PAFB-CORE-02" type="SIMPLE" subtype="IOSv" location="880,556">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:33:20 UTC Sun May 24 2015
+! Last configuration change at 16:02:47 UTC Wed May 27 2015
 !
 version 15.5
 service timestamps debug datetime msec
@@ -2155,7 +2200,7 @@ interface Loopback1
 !
 interface GigabitEthernet0/0
  description OOB Management
- ip address 10.255.0.120 255.255.0.0
+ ip address 10.255.0.192 255.255.0.0
  shutdown
  duplex auto
  speed auto
@@ -2192,10 +2237,12 @@ interface GigabitEthernet0/4
 router ospf 1
  area 0 authentication message-digest
  redistribute bgp 200 metric 400 subnets route-map CSNI-ROUTES-INTO-OSPF
+ passive-interface GigabitEthernet0/2
  passive-interface GigabitEthernet0/4
  network 10.0.100.33 0.0.0.0 area 0
  network 10.0.150.30 0.0.0.0 area 0
  network 10.0.150.36 0.0.0.0 area 0
+ network 192.168.2.1 0.0.0.0 area 0
  network 192.168.4.2 0.0.0.0 area 0
 !
 router bgp 200
@@ -2451,169 +2498,21 @@ write_files:
     <node name="CMAF-MSCI-FW-01" type="SIMPLE" subtype="FORTiOS" location="422,407" vmImage="FORTiOS-5" vmFlavor="FORTiOS">
         <extensions>
             <entry key="config" type="String">#config-version=FGVMK6-5.02-FW-build589-140613:opmode=0:vdom=1:user=admin
-#conf_file_ver=17054064819681458245
-#buildno=0589
-#global_vdom=1
-
-config vdom
-edit root
-next
-edit MGMT
-next
-end
-
-config global
-config system global
-    set fgd-alert-subscription advisory latest-threat
-    set hostname "CMAF-MSCI-FW-01"
-    set optimize antivirus
-    set timezone 04
-    set vdom-admin enable
-end
-config system accprofile
-    edit "prof_admin"
-        set mntgrp read-write
-        set admingrp read-write
-        set updategrp read-write
-        set authgrp read-write
-        set sysgrp read-write
-        set netgrp read-write
-        set loggrp read-write
-        set routegrp read-write
-        set fwgrp read-write
-        set vpngrp read-write
-        set utmgrp read-write
-        set wanoptgrp read-write
-        set endpoint-control-grp read-write
-        set wifi read-write
-    next
-end
 config system interface
-    edit "port1"
-        set vdom "root"
-        set type physical
-        set snmp-index 1
-    next
-    edit "port2"
-        set vdom "root"
-        set ip 10.200.200.14 255.255.255.252
-        set allowaccess ping
-        set type physical
-        set alias "CMAF-MSCI-OR-01-SIPR"
-        set snmp-index 2
-    next
-    edit "port3"
-        set vdom "root"
-        set ip 10.200.200.22 255.255.255.252
-        set allowaccess ping
-        set type physical
-        set alias "CMAF-MSCI-IR-01"
-        set snmp-index 3
-    next
-    edit "port4"
-        set vdom "root"
-        set ip 172.16.1.10 255.255.255.0
-        set allowaccess ping https ssh http fgfm
-        set type physical
-        set snmp-index 4
-    next
-    edit "port5"
-        set vdom "root"
-        set ip 10.200.200.10 255.255.255.252
-        set allowaccess ping 
-        set type physical
-        set alias "CMAF-MSCI-OR-01-CSNI"
-        set snmp-index 4
-    next
-    edit "port6"
-        set vdom "root"
-        set type physical
-        set snmp-index 6
-    next
     edit "port7"
         set vdom "root"
+        set ip 172.16.1.10 255.255.255.0
+        set allowaccess ping https http
         set type physical
         set snmp-index 7
     next
-    edit "ssl.root"
-        set vdom "root"
-        set type tunnel
-        set alias "SSL VPN interface"
-        set snmp-index 8
-    next
-    edit "ssl.MGMT"
-        set vdom "MGMT"
-        set type tunnel
-        set alias "SSL VPN interface"
-        set snmp-index 9
-    next
 end
-config vdom
-edit root
 config router static
     edit 1
         set gateway 172.16.1.1
-        set device "port4"
+        set device "port7"
     next
-end
-config router ospf
-    set router-id 10.200.200.37
-        config area
-            edit 0.0.0.0
-                set authentication md5
-            next
-        end
-        config ospf-interface
-            edit "CMAF_INSIDE"
-                set interface "port3"
-                set ip 10.200.200.22
-                set authentication md5
-                set md5-key 1 "ENC yfY7Xzk8f4hEYfiZD3esJnchmlFu"
-                set dead-interval 40
-                set hello-interval 10
-            next
-            edit "SIPR_OUTSIDE"
-                set interface "port2"
-                set ip 10.200.200.14
-                set authentication md5
-                set md5-key 1 "ENC r4akX7j9ZzFBZM28kiHP9IOMYGVp"
-                set dead-interval 40
-                set hello-interval 10
-            next
-            edit "CSNI_OUTSIDE"
-                set interface "port5"
-                set ip 10.200.200.10
-                set authentication md5
-                set md5-key 1 "ENC r4akX7j9ZzFBZM28kiHP9IOMYGVp"
-                set dead-interval 40
-                set hello-interval 10
-            next
-        end
-        config network
-            edit 1
-                set prefix 10.200.200.20 255.255.255.252
-            next
-            edit 2
-                set prefix 10.200.200.12 255.255.255.252
-            next
-            edit 2
-                set prefix 10.200.200.8 255.255.255.252
-            next
-
-        end
-        config redistribute "connected"
-        end
-        config redistribute "static"
-        end
-        config redistribute "rip"
-        end
-        config redistribute "bgp"
-        end
-        config redistribute "isis"
-        end
-end
-end
-</entry>
+end</entry>
         </extensions>
         <interface id="0" name="port2"/>
         <interface id="1" name="port3"/>
@@ -2626,7 +2525,7 @@ end
     <node name="CMAF-MSCI-IS-01" type="SIMPLE" subtype="IOSvL2" location="409,531">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:16 MDT Sun May 24 2015
+! Last configuration change at 14:56:43 MDT Wed May 27 2015
 !
 version 15.2
 no service pad
@@ -2678,15 +2577,16 @@ vlan internal allocation policy ascending
 vlan 23
  name Management
 !
-vlan 24
- name CSNI-TRAFFIC
-!
 vlan 25
  name DNSSEC-TRAFFIC
 !
+vlan 26
+ name MCCBS-TRAFFIC
+!
+vlan 27
+ name NEN-TRAFFIC
+!
 ip tcp synwait-time 10
-ip ftp source-interface Loopback1
-ip tftp source-interface Loopback1
 ip ssh time-out 30
 ip ssh version 2
 ip scp server enable
@@ -2702,25 +2602,29 @@ ip scp server enable
 !
 !
 !
-interface Loopback1
- no ip address
-!
 interface GigabitEthernet0/0
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet0/1
  description CMAF-MSCI-IR-01 G0/0/0 Mission Traffic
- switchport access vlan 24
- switchport mode access
+ switchport trunk allowed vlan 25-27
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet0/2
+ description &lt;== CMAF-MSCI-FW-01 CSNI Mission Traffic  Port 5 ==&gt;
+ switchport access vlan 26
+ switchport mode access
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet0/3
+ description &lt;== CMAF-MSCI-FW-01 Port04 NEN Traffic ==&gt;
+ switchport access vlan 27
+ switchport mode access
  media-type rj45
  negotiation auto
 !
@@ -2741,10 +2645,16 @@ interface GigabitEthernet1/3
  negotiation auto
 !
 interface GigabitEthernet2/0
+ description &lt;== Connection to DNS Server ==&gt;
+ switchport access vlan 25
+ switchport mode access
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet2/1
+ description &lt;== Connection to MCCBS Server ==&gt;
+ switchport access vlan 26
+ switchport mode access
  media-type rj45
  negotiation auto
 !
@@ -2756,16 +2666,21 @@ interface GigabitEthernet2/2
  negotiation auto
 !
 interface GigabitEthernet2/3
+ description &lt;== CMAF-MSCI-FW-01 Port6 MGMT ==&gt;
+ switchport access vlan 23
+ switchport mode access
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet3/0
+ description &lt;== CMAF-MSCI-OS-01 G3/0 MGMT ==&gt;
  switchport access vlan 23
  switchport mode access
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet3/1
+ description &lt;== CMAF-MSCI-OR-01 G05 MGMT ==&gt;
  switchport access vlan 23
  switchport mode access
  media-type rj45
@@ -2828,6 +2743,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="7" name="GigabitEthernet2/0"/>
         <interface id="8" name="GigabitEthernet2/1"/>
         <interface id="9" name="GigabitEthernet2/2"/>
@@ -2838,7 +2754,7 @@ end</entry>
     <node name="CMAF-MSCI-OS-01" type="SIMPLE" subtype="IOSvL2" location="423,316">
         <extensions>
             <entry key="config" type="String">!
-! Last configuration change at 13:31:37 UTC Sun May 24 2015
+! Last configuration change at 13:39:27 UTC Wed May 27 2015
 !
 version 15.2
 no service pad
@@ -3040,13 +2956,331 @@ end</entry>
         <interface id="14" name="GigabitEthernet3/3"/>
     </node>
     <node name="US-DNS-SERVER" type="SIMPLE" subtype="server" location="260,475">
+        <extensions>
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-DNS-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.200.200.60 netmask 255.255.255.248
+    route add -net 0.0.0.0/0 gw 10.200.200.57 dev eth1
+    exit 0
+</entry>
+        </extensions>
         <interface id="0" name="eth1"/>
     </node>
     <node name="US-MCCBS-SERVER" type="SIMPLE" subtype="server" location="258,539">
+        <extensions>
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-MCCBS-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.200.200.52 netmask 255.255.255.248
+    route add -net 0.0.0.0/0 gw 10.200.200.49 dev eth1
+    exit 0
+</entry>
+        </extensions>
         <interface id="0" name="eth1"/>
     </node>
     <node name="flat-1" type="ASSET" subtype="FLAT" location="301,318">
         <interface id="0" name="link0"/>
+    </node>
+    <node name="NEN-ROUTER" type="SIMPLE" subtype="IOSv" location="215,223">
+        <extensions>
+            <entry key="config" type="String">!
+! Last configuration change at 17:03:50 UTC Wed May 27 2015
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname NEN-ROUTER
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+bsd-client server url https://cloudsso.cisco.com/as/token.oauth2
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+cts logging verbose
+!
+!
+!
+redundancy
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ ip address 10.255.0.186 255.255.0.0
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ ip address 10.200.200.18 255.255.255.252
+ ip ospf message-digest-key 1 md5 password
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/2
+ ip address 10.10.10.1 255.255.255.0
+ duplex auto
+ speed auto
+ media-type rj45
+!
+router ospf 1
+ router-id 10.200.200.18
+ area 0 authentication message-digest
+ passive-interface GigabitEthernet0/2
+ network 10.10.10.1 0.0.0.0 area 0
+ network 10.200.200.18 0.0.0.0 area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+    </node>
+    <node name="NEN-SERVER" type="SIMPLE" subtype="server" location="46,219">
+        <extensions>
+            <entry key="config" type="String">#cloud-config
+bootcmd:
+- ln -s -t /etc/rc.d /etc/rc.local
+hostname: US-NEN-SERVER
+manage_etc_hosts: true
+runcmd:
+- start ttyS0
+- systemctl start getty@ttyS0.service
+- systemctl start rc-local
+- sed -i '/^\s*PasswordAuthentication\s\+no/d' /etc/ssh/sshd_config
+- echo "UseDNS no" &gt;&gt; /etc/ssh/sshd_config
+- service ssh restart
+- service sshd restart
+users:
+- default
+- gecos: User configured by VIRL Configuration Engine 0.15.5
+  lock-passwd: false
+  name: cisco
+  plain-text-passwd: cisco
+  shell: /bin/bash
+  ssh-authorized-keys:
+  - VIRL-USER-SSH-PUBLIC-KEY
+  sudo: ALL=(ALL) ALL
+write_files:
+- path: /etc/init/ttyS0.conf
+  owner: root:root
+  content: |
+    # ttyS0 - getty
+    # This service maintains a getty on ttyS0 from the point the system is
+    # started until it is shut down again.
+    start on stopped rc or RUNLEVEL=[12345]
+    stop on runlevel [!12345]
+    respawn
+    exec /sbin/getty -L 115200 ttyS0 vt102
+  permissions: '0644'
+- path: /etc/systemd/system/dhclient@.service
+  content: |
+    [Unit]
+    Description=Run dhclient on %i interface
+    After=network.target
+    [Service]
+    Type=oneshot
+    ExecStart=/sbin/dhclient %i -pf /var/run/dhclient.%i.pid -lf /var/lib/dhclient/dhclient.%i.lease
+    RemainAfterExit=yes
+  owner: root:root
+  permissions: '0644'
+- path: /etc/rc.local
+  owner: root:root
+  permissions: '0755'
+  content: |-
+    #!/bin/sh -e
+    ifconfig eth1 up 10.10.10.10 netmask 255.255.255.0
+    route add -net 0.0.0.0/0 gw 10.10.10.1 dev eth1
+    exit 0
+</entry>
+        </extensions>
+        <interface id="0" name="eth1"/>
     </node>
     <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[6]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
@@ -3068,12 +3302,15 @@ end</entry>
     <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[8]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[3]"/>
     <connection dst="/virl:topology/virl:node[9]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[3]" src="/virl:topology/virl:node[15]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[4]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[7]" src="/virl:topology/virl:node[14]/virl:interface[4]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[8]" src="/virl:topology/virl:node[3]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[4]" src="/virl:topology/virl:node[15]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[5]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[6]" src="/virl:topology/virl:node[5]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[8]" src="/virl:topology/virl:node[14]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[9]" src="/virl:topology/virl:node[3]/virl:interface[5]"/>
     <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[14]/virl:interface[6]"/>
     <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[12]/virl:interface[6]"/>
-    <connection dst="/virl:topology/virl:node[13]/virl:interface[6]" src="/virl:topology/virl:node[12]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[7]" src="/virl:topology/virl:node[12]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[4]" src="/virl:topology/virl:node[18]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[2]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[3]" src="/virl:topology/virl:node[12]/virl:interface[3]"/>
 </topology>
